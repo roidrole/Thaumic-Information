@@ -26,9 +26,10 @@ public class ThaumicSJWConfig {
 			"Optimizes Thaumcraft's hash for ItemStacks",
 			"Thaumcraft internally uses this hash to map Aspects to ItemStacks and to handle oredict scanning",
 			"Toggling this option will require you to delete the itemstack cache and the jei cache",
-			"Note that this option will make ItemStacks aspect matching disregard capabilities"
+			"Note that this option will make ItemStacks aspect matching disregard capabilities",
+			"If you have Thaumic Speedup installed, toggle this off."
 		})
-		public boolean fasterHash = true;
+		public boolean fasterHash = false;
 
 		@Config.Comment({
 			"Implements FastWorkbench for the pattern crafter",
