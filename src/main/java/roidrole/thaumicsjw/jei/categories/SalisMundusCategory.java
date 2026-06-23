@@ -109,7 +109,7 @@ public class SalisMundusCategory extends AbstractResearchCategory<SalisMundusCat
 		group.set(ingredients);
 	}
 
-	public static abstract class SalisMundusRecipeWrapper implements IHasResearch {
+	public static abstract class SalisMundusRecipeWrapper extends HasResearch {
 		List<List<ItemStack>> input;
 		List<List<ItemStack>> output;
 		String research;

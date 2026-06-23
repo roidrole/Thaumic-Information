@@ -96,7 +96,7 @@ public class InfusionCategory extends AbstractResearchCategory<InfusionCategory.
         this.recipes = list;
     }
 
-    public static class InfusionWrapper implements IHasResearch {
+    public static class InfusionWrapper extends HasResearch {
 
         private final InfusionRecipe recipe;
 
@@ -129,7 +129,7 @@ public class InfusionCategory extends AbstractResearchCategory<InfusionCategory.
 
         @Override
         public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-            IHasResearch.super.drawInfo(minecraft, recipeWidth, recipeHeight, mouseX, mouseY);
+            super.drawInfo(minecraft, recipeWidth, recipeHeight, mouseX, mouseY);
             int instability = Math.min(5, recipe.instability / 2);
             String inst = TextFormatting.DARK_GRAY + new TextComponentTranslation("tc.inst").getFormattedText() + new TextComponentTranslation("tc.inst." + instability).getUnformattedText();
             minecraft.fontRenderer.drawString(inst, (recipeWidth / 2) - (minecraft.fontRenderer.getStringWidth(inst) / 2), 158, 0);

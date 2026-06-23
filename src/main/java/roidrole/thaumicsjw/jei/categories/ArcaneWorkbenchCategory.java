@@ -103,7 +103,7 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
         ;
     }
 
-    public static class ArcaneWorkbenchWrapper implements IHasResearch {
+    public static class ArcaneWorkbenchWrapper extends HasResearch {
 
         private final IArcaneRecipe recipe;
 
@@ -145,7 +145,7 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
 
         @Override
         public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-            IHasResearch.super.drawInfo(minecraft, recipeWidth, recipeHeight, mouseX, mouseY);
+            super.drawInfo(minecraft, recipeWidth, recipeHeight, mouseX, mouseY);
             minecraft.fontRenderer.drawString(TextFormatting.DARK_GRAY + String.valueOf(recipe.getVis()), 50 - minecraft.fontRenderer.getStringWidth(String.valueOf(recipe.getVis())) / 2, 12, 0);
         }
 
@@ -165,12 +165,7 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
             if (mouseX > 34 && mouseX < 60 && mouseY > 4 && mouseY < 28) {
                 return Collections.singletonList("Vis Cost");
             }
-            return IHasResearch.super.getTooltipStrings(mouseX, mouseY);
-        }
-
-        @Override
-        public boolean handleClick(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
-            return false;
+            return super.getTooltipStrings(mouseX, mouseY);
         }
 
         public IArcaneRecipe getRecipe() {
