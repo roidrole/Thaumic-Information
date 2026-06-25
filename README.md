@@ -1,7 +1,7 @@
 # Thaumic Roid
-Roid's Thaumcraft addon (name WIP)
+Roid's Thaumcraft addon
 
-A fork of Thaumic JEI and Thaumic Waila, improving performance and functionality. Also contains performance improvements
+Thaumcraft addon integrating Thaumcraft with JEI, HWYLA and VisualOres and adds some performance improvements
 
 ## Features
 

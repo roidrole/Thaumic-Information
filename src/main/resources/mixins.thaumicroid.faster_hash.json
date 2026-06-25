@@ -1,0 +1,14 @@
+{
+	"package": "roidrole.thaumicroid.mixins.faster_hash",
+	"required": true,
+	"refmap": "mixins.thaumicroid.refmap.json",
+	"target": "@env(DEFAULT)",
+	"minVersion": "0.8.5",
+	"compatibilityLevel": "JAVA_8",
+	"mixins": [
+		"CommonInternalsMixin",
+		"ThaumcraftApiMixin"
+	],
+	"server": [],
+	"client": []
+}
