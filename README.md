@@ -20,7 +20,7 @@ All features of Thaumic JEI, plus:
 
 ### Waila
 - Suction and amount is shown in Waila (as opposed to only contents)
-- Brain in a Jar support
+- Brain in a Jar support (can show xp in points, levels or mb)
 - Vis Battery support
 - Support for all languages supported by Thaumcraft itself
 - HWYLA Config to require goggles
@@ -36,3 +36,7 @@ All features of Thaumic JEI, plus:
 - Recipe cache (FastWorkbench) for the pattern crafter
 - Faster oredict wildcard (direct port of Thaumic Speedup's removed feature)
 There is **experimental compat** with Thaumic Speedup 5.0 for the Itemstack hash and aspect cache. I recommend disabling both if Thaumic Speedup is installed.
+
+### Miscellaneous
+- Show Thaumcraft's aspect tooltip anywhere
+- Extract/Insert liquid xp from a brain in a jar

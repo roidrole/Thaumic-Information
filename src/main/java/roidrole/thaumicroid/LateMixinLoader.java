@@ -1,6 +1,7 @@
 package roidrole.thaumicroid;
 
 import net.minecraftforge.fml.common.Loader;
+import roidrole.thaumicroid.utils.JarBrainFluidCapability;
 import zone.rong.mixinbooter.ILateMixinLoader;
 
 import java.util.ArrayList;
@@ -31,11 +32,14 @@ public class LateMixinLoader implements ILateMixinLoader {
 		}
 		if(Loader.isModLoaded("visualores")){
 			if(ThaumicRoidConfig.visualOresConfig.dioptraUpdatesAura){
-				mixinConfigs.add("mixins.thaumicroid.dioptra_aura.json");
+				mixinConfigs.add("mixins."+Tags.MOD_ID+".dioptra_aura.json");
 			}
 			if(ThaumicRoidConfig.visualOresConfig.overlay.enabled){
-				mixinConfigs.add("mixins.thaumicroid.recolour_overlay.json");
+				mixinConfigs.add("mixins."+Tags.MOD_ID+".recolour_overlay.json");
 			}
+		}
+		if(JarBrainFluidCapability.liquidXP != null){
+			mixinConfigs.add("mixins."+Tags.MOD_ID+".brainjarfluidhandler.json");
 		}
 		mixinConfigs.add("mixins."+Tags.MOD_ID+".accessors.json");
 		return mixinConfigs;

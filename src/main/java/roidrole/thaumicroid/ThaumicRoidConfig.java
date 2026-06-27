@@ -17,6 +17,16 @@ public class ThaumicRoidConfig {
 
 		@Config.Comment("Allows rendering the ItemStacks aspects in all GUI")
 		public boolean aspectTooltipInAllGUI = true;
+
+		@Config.Comment({
+			"The fluid experience your pack uses. For <liquid:xp>, write \"xp\" (no quotes)",
+			"Used to insert/extract liquid xp from a brain in a jar",
+			"Leave empty to disable"
+		})
+		public String liquidXP = "";
+
+		@Config.Comment("The amount of mB of liquid XP per experience point")
+		public int xpPointToMb = 0;
 	}
 
 
