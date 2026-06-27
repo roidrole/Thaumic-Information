@@ -15,6 +15,7 @@ import thaumcraft.api.research.ResearchCategory;
 import thaumcraft.api.research.ResearchEntry;
 import thaumcraft.client.gui.GuiResearchPage;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +30,7 @@ import java.util.List;
  */
 
 public abstract class HasResearch implements IRecipeWrapper {
+    @Nullable
     public abstract String getResearch();
     public abstract int getBarrierX();
     public abstract int getBarrierY();
@@ -71,6 +73,9 @@ public abstract class HasResearch implements IRecipeWrapper {
 
     @Override
     public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
+        if(this.getResearch() == null){
+            return;
+        }
         ResourceLocation book;
         if (ThaumcraftCapabilities.knowsResearch(minecraft.player, this.getResearch())) {
             book = new ResourceLocation("thaumicjei", "textures/gui/thaumonomicon_green.png");
@@ -99,6 +104,9 @@ public abstract class HasResearch implements IRecipeWrapper {
     }
 
     private ResearchEntry getResearchEntry(){
+        if(this.getResearch() == null){
+            return null;
+        }
         ResearchEntry research;
         for(ResearchCategory category : ResearchCategories.researchCategories.values()){
             research = category.research.get(this.getResearch().split("@")[0]);

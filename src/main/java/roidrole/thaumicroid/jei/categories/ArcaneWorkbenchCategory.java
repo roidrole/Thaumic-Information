@@ -24,7 +24,6 @@ import thaumcraft.api.crafting.ShapelessArcaneRecipe;
 import thaumcraft.api.items.ItemsTC;
 import thaumcraft.common.items.resources.ItemCrystalEssence;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -160,7 +159,6 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
             return 8;
         }
 
-        @Nullable
         @Override
         public List<String> getTooltipStrings(int mouseX, int mouseY) {
             if (mouseX > 34 && mouseX < 60 && mouseY > 4 && mouseY < 28) {

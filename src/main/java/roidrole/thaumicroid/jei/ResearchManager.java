@@ -66,6 +66,9 @@ public class ResearchManager {
         }
         for (AbstractResearchCategory<?> category : AbstractResearchCategory.categories){
             for(HasResearch wrapper : category.recipes){
+                if(wrapper.getResearch() == null){
+                    runtime.getRecipeRegistry().unhideRecipe(wrapper, category.getUid());
+                }
                 boolean hasAll = true;
                 for (String subResearch : wrapper.getResearch().split("&&")) {
                     if (!knowledge.isResearchComplete(subResearch)) {
