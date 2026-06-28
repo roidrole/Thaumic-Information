@@ -1,0 +1,16 @@
+{
+	"package": "roidrole.thaumicinfo.mixins",
+	"required": true,
+	"refmap": "mixins.thaumicinfo.refmap.json",
+	"target": "@env(DEFAULT)",
+	"minVersion": "0.8.5",
+	"compatibilityLevel": "JAVA_8",
+	"mixins": [
+		"dioptra_aura.BlockDioptraMixin",
+		"dioptra_aura.TCClientCacheAccessor",
+		"dioptra_aura.TCDimensionCacheAccessor",
+		"dioptra_aura.TileDioptraMixin"
+	],
+	"server": [],
+	"client": []
+}

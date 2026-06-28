@@ -1,0 +1,14 @@
+{
+	"package": "roidrole.thaumicinfo.mixins",
+	"required": true,
+	"refmap": "mixins.thaumicinfo.refmap.json",
+	"target": "@env(DEFAULT)",
+	"minVersion": "0.8.5",
+	"compatibilityLevel": "JAVA_8",
+	"mixins": [
+		"InjectJERCrystals",
+		"accessors.AccessorMobEntry"
+	],
+	"server": [],
+	"client": []
+}
