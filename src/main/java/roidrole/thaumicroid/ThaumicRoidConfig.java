@@ -2,6 +2,10 @@ package roidrole.thaumicroid;
 
 import com.cleanroommc.configanytime.ConfigAnytime;
 import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 @Config(
 	modid = Tags.MOD_ID,
@@ -12,12 +16,15 @@ public class ThaumicRoidConfig {
 	@Config.Name("General Configs")
 	public static final General general = new General();
 	public static class General {
+		@Config.RequiresMcRestart
 		@Config.Comment("The path in which the aspect caches will be written")
 		public String cachePath = "cache/" + Tags.MOD_ID;
 
+		@Config.RequiresMcRestart
 		@Config.Comment("Allows rendering the ItemStacks aspects in all GUI")
 		public boolean aspectTooltipInAllGUI = true;
 
+		@Config.RequiresMcRestart
 		@Config.Comment({
 			"The fluid experience contained in the brain in a jar.",
 			"Format: \"<liquid:xp>\", becomes \"xp\" (no quotes)",
@@ -34,6 +41,7 @@ public class ThaumicRoidConfig {
 	@Config.Name("Performance Configs")
 	public static final Performance performanceConfig = new Performance();
 	public static class Performance {
+		@Config.RequiresMcRestart
 		@Config.Comment({
 			"Optimizes Thaumcraft's hash for ItemStacks",
 			"Toggling this option will require you to delete the itemstack cache",
@@ -42,12 +50,15 @@ public class ThaumicRoidConfig {
 		})
 		public boolean fasterHash = false;
 
+		@Config.RequiresMcRestart
 		@Config.Comment("Implements FastWorkbench for the pattern crafter")
 		public boolean patternCrafterRecipeCache = true;
 
+		@Config.RequiresMcRestart
 		@Config.Comment("Optimizes the acquisition of oreDicts ending in a wildcard i.e. ingot*")
 		public boolean fasterOreDictWildcard = true;
 
+		@Config.RequiresMcRestart
 		@Config.Comment({
 			"Caches the entity and itemstack aspects on first launch",
 			"Limits the amount of cached different aspects and the quantity of any aspect to 255",
@@ -61,17 +72,21 @@ public class ThaumicRoidConfig {
 	@Config.Name("JEI Configs")
 	public static final JEI jeiConfig = new JEI();
 	public static class JEI {
+		@Config.RequiresMcRestart
 		@Config.Comment("Hide recipes from JEI if you don't have the research for it")
 		public boolean hideRecipesIfMissingResearch = false;
 
+		@Config.RequiresMcRestart
 		@Config.Comment("Items blacklisted from the checking in the Aspect For ItemStack. Format: 'minecraft:stone'")
 		public String[] jeiBlacklist = {
 			"minecraft:spawn_egg"
 		};
 
+		@Config.RequiresMcRestart
 		@Config.Comment("Should the crafting recipe for Salis Mundus and Triple Meat Treat appear in JEI?")
 		public boolean showSpecialRecipes = true;
 
+		@Config.RequiresMcRestart
 		@Config.Comment({
 			"Make JER mob loot include crystals dropped when killed by liquid death",
 			"Requires Just Enough Resources"
@@ -82,24 +97,31 @@ public class ThaumicRoidConfig {
 		@Config.Comment("Toggles to unregister any JEI Category")
 		public final CategoryToggle categoryToggle = new CategoryToggle();
 		public static class CategoryToggle {
+			@Config.RequiresMcRestart
 			@Config.Name("Arcane Workbench")
 			public boolean arcaneWorkbench = true;
 
+			@Config.RequiresMcRestart
 			@Config.Name("Aspect Compound")
 			public boolean aspectCompound = true;
 
+			@Config.RequiresMcRestart
 			@Config.Name("Aspect from ItemStack")
 			public boolean aspectFromItemStack = true;
 
+			@Config.RequiresMcRestart
 			@Config.Name("Crucible")
 			public boolean crucible = true;
 
+			@Config.RequiresMcRestart
 			@Config.Name("Salis Mundus")
 			public boolean salisMundus = true;
 
+			@Config.RequiresMcRestart
 			@Config.Name("Infusion Crafting")
 			public boolean infusion = true;
 
+			@Config.RequiresMcRestart
 			@Config.Name("Infernal Furnace")
 			public boolean infernalFurnace = true;
 		}
@@ -109,6 +131,7 @@ public class ThaumicRoidConfig {
 	@Config.Name("VisualOres Configs")
 	public static final VisualOres visualOresConfig = new VisualOres();
 	public static class VisualOres {
+		@Config.RequiresMcRestart
 		@Config.Comment({
 			"Whether thaumic dioptra should send aura data to every online player that interacted with it",
 			"This makes the dioptra auto-update the VisualOres map in a 13x13 chunk square centered on the dioptra"
@@ -121,6 +144,7 @@ public class ThaumicRoidConfig {
 		})
 		public final Overlay overlay = new Overlay();
 		public static class Overlay {
+			@Config.RequiresMcRestart
 			@Config.Comment("Allows modification of the overlay")
 			public boolean enabled = true;
 
@@ -146,18 +170,32 @@ public class ThaumicRoidConfig {
 	})
 	public static final HWYLA hwylaConfig = new HWYLA();
 	public static class HWYLA {
+		@Config.RequiresMcRestart
 		@Config.Comment({
 			"Integration for the brain in a jar. Shows xp contents",
 			"Automatically disabled if the brain in a jar acts as a fluid tank for xp."
 		})
 		public boolean brainInJar = true;
+		@Config.RequiresMcRestart
 		@Config.Comment("Integration for essentia tubes. Shows contents and suction")
 		public boolean essentiaTransport = true;
+		@Config.RequiresMcRestart
 		@Config.Comment("Integration for goggles display. Only used for the Infusion Matrix's stability")
 		public boolean gogglesDisplay = true;
+		@Config.RequiresMcRestart
 		@Config.Comment("integration for the vis battery. Shows current and max stored vis")
 		public boolean visBattery = true;
 
+	}
+
+	@Mod.EventBusSubscriber(modid = Tags.MOD_ID)
+	public static class ConfigEventHandler {
+		@SubscribeEvent
+		public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
+			if (event.getModID().equals(Tags.MOD_ID)) {
+				ConfigManager.sync(Tags.MOD_ID, Config.Type.INSTANCE);
+			}
+		}
 	}
 
 	static {
