@@ -1,5 +1,4 @@
-# Thaumic Roid
-Roid's Thaumcraft addon
+# Thaumic Information
 
 Thaumcraft addon integrating Thaumcraft with JEI, HWYLA and VisualOres and adds some performance improvements
 
