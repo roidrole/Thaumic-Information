@@ -38,8 +38,7 @@ public class ThaumicRoidConfig {
 			"Optimizes Thaumcraft's hash for ItemStacks",
 			"Toggling this option will require you to delete the itemstack cache",
 			"Note that this option will make ItemStacks aspect matching disregard capabilities",
-			"This might be more stable than Thaumic Speedup's if the aspect cache is enabled",
-			"If enabled and Thaumic Speedup is installed, it will overwrite Thaumic Speedup's."
+			"This might be more stable than Thaumic Speedup's hash if the aspect cache is enabled"
 		})
 		public boolean fasterHash = false;
 
@@ -53,7 +52,7 @@ public class ThaumicRoidConfig {
 			"Caches the entity and itemstack aspects on first launch",
 			"Limits the amount of cached different aspects and the quantity of any aspect to 255",
 			"This limit does not apply on aspects computed through recipes unless they are computed during launch",
-			"If you have issue with aspects and you have Thaumic Speedup installed, turn this off or turn on our fasterHash"
+			"This option might mess up aspects. You should use Thaumic Speedup instead"
 		})
 		public boolean aspectCache = false;
 	}
