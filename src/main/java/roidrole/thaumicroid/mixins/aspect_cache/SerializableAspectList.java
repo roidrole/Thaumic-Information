@@ -33,7 +33,7 @@ public abstract class SerializableAspectList implements Externalizable {
 		for (int i = 0; i < limit; i++) {
 			this.aspects.put(
 				Aspect.getAspect((String)in.readObject()),
-				in.read() & 0xFF
+				in.read()
 			);
 		}
 	}
