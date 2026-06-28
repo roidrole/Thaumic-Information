@@ -93,6 +93,9 @@ public class CacheManager {
 				(map, stack) -> {
 					AspectList list = AspectHelper.getObjectAspects(stack);
 					int totalCount = list.visSize();
+					if(totalCount == 0){
+						return;
+					}
 					list.aspects.forEach((aspect, count) -> map
 						.computeIfAbsent(aspect, key -> new ArrayMap<>())
 						.computeIfAbsent(count, ArrayList::new)
