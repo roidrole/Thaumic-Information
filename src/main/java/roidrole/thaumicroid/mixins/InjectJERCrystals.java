@@ -15,7 +15,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import roidrole.thaumicroid.ThaumicRoid;
 import roidrole.thaumicroid.mixins.accessors.AccessorMobEntry;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.ThaumcraftApiHelper;
@@ -39,7 +38,6 @@ public abstract class InjectJERCrystals {
 	)
 	private static void computeJERCrystal(List<IModPlugin> plugins, ModRegistry modRegistry, CallbackInfo ci){
 		//Add crystals is killed with liquid death
-		long start = System.currentTimeMillis();
 		HashMap<Aspect, ItemStack> crystalCache = new HashMap<>(Aspect.aspects.size() * 2);
 		HashMap<String, ThaumcraftApi.EntityTags> entityTagCache = new HashMap<>(CommonInternals.scanEntities.size() * 2);
 
@@ -63,6 +61,5 @@ public abstract class InjectJERCrystals {
 				((AccessorMobEntry)entry).getDropsSet().add(drop);
 			}
 		}
-		ThaumicRoid.LOGGER.info("Injected vis crystals to JER in {} ms", System.currentTimeMillis() - start);
 	}
 }
