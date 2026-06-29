@@ -14,11 +14,18 @@ import javax.annotation.Nullable;
 import static roidrole.thaumicinfo.ThaumicInformation.LOGGER;
 
 public class JarBrainFluidCapability implements IFluidHandler {
-	public static final Fluid liquidXP = FluidRegistry.getFluid(ThaumicInformationConfig.general.liquidXP);
+	private static Fluid liquidXP = null;
 
 	public final TileJarBrain jarBrain;
 
 	public JarBrainFluidCapability(TileJarBrain jarBrain) {
+		if(liquidXP == null){
+			liquidXP = FluidRegistry.getFluid(ThaumicInformationConfig.general.liquidXP);
+			if(liquidXP == null){
+				ThaumicInformation.LOGGER.error("The liquid xp fluid in the config in thaumicinfo.cfg -> general -> liquidXp is invalid! Setting to water.");
+				liquidXP = FluidRegistry.WATER;
+			}
+		}
 		this.jarBrain = jarBrain;
 	}
 

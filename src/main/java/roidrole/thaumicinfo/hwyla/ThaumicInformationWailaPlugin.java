@@ -5,7 +5,6 @@ import mcp.mobius.waila.api.IWailaRegistrar;
 import mcp.mobius.waila.api.WailaPlugin;
 import roidrole.thaumicinfo.Tags;
 import roidrole.thaumicinfo.ThaumicInformationConfig;
-import roidrole.thaumicinfo.JarBrainFluidCapability;
 import thaumcraft.api.aspects.IEssentiaTransport;
 import thaumcraft.api.items.IGogglesDisplayExtended;
 import thaumcraft.common.blocks.devices.BlockVisBattery;
@@ -30,7 +29,7 @@ public class ThaumicInformationWailaPlugin implements IWailaPlugin {
 			registrar.registerBodyProvider(ProviderBlockVisBattery.INSTANCE, BlockVisBattery.class);
 		}
 
-		if(ThaumicInformationConfig.hwylaConfig.brainInJar && JarBrainFluidCapability.liquidXP == null) {
+		if(ThaumicInformationConfig.hwylaConfig.brainInJar && ThaumicInformationConfig.general.liquidXP.isEmpty()) {
 			registrar.registerBodyProvider(ProviderBrainJar.INSTANCE, TileJarBrain.class);
 		}
 

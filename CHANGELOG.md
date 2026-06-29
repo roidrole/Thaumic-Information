@@ -11,6 +11,7 @@ Post-release panic
 **Fixed:** 
 - Off-by-one AspectFromItemStackCategory background
 - Crash if an aspect does not exist in Aspect.aspects
+- Brain in a jar not working with modded fluids
 
 **Changed:** Rebranded as Thaumic Information (thaumicinfo)
 
