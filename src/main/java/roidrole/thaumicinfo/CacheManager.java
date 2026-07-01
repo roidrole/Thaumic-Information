@@ -99,7 +99,7 @@ public class CacheManager {
 					}
 					list.aspects.forEach((aspect, count) -> map
 						.computeIfAbsent(aspect, key -> new ArrayMap<>())
-						.computeIfAbsent(count, ArrayList::new)
+						.computeIfAbsent(Math.max(count, 0), ArrayList::new)
 						.add(writeItemStack(stack, count, (191 * count / totalCount) + 32))
 					);
 
