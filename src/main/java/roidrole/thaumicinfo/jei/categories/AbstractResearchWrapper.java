@@ -35,6 +35,7 @@ public abstract class AbstractResearchWrapper implements IRecipeWrapper {
     public abstract String getResearch();
     public abstract int getBarrierX();
     public abstract int getBarrierY();
+    public abstract String getCategory();
 
     static GuiScreen oldGui = null;
     @Override

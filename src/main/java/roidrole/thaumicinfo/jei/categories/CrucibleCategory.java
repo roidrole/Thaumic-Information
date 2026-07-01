@@ -111,6 +111,11 @@ public class CrucibleCategory extends AbstractResearchCategory<CrucibleCategory.
         }
 
         @Override
+        public String getCategory() {
+            return CrucibleCategory.UUID;
+        }
+
+        @Override
         public String getResearch() {
             return recipe.getResearch();
         }

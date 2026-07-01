@@ -30,9 +30,6 @@ public class ThaumicInformation {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         LOGGER = event.getModLog();
-        if(event.getSide() == Side.CLIENT && ThaumicInformationConfig.jeiConfig.hideRecipesIfMissingResearch){
-            MinecraftForge.EVENT_BUS.register(ResearchManager.class);
-        }
         if(ThaumicInformationConfig.visualOresConfig.dioptraUpdatesAura && Loader.isModLoaded("visualores")){
             PacketHandler.preInit();
         }

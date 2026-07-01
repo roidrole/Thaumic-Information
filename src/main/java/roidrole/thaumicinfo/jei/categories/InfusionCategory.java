@@ -147,6 +147,11 @@ public class InfusionCategory extends AbstractResearchCategory<InfusionCategory.
         }
 
         @Override
+        public String getCategory() {
+            return InfusionCategory.UUID;
+        }
+
+        @Override
         public String getResearch() {
             return recipe.research;
         }

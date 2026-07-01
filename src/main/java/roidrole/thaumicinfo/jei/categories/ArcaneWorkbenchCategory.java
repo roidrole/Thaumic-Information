@@ -160,6 +160,11 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
         }
 
         @Override
+        public String getCategory() {
+            return ArcaneWorkbenchCategory.UUID;
+        }
+
+        @Override
         public List<String> getTooltipStrings(int mouseX, int mouseY) {
             if (mouseX > 34 && mouseX < 60 && mouseY > 4 && mouseY < 28) {
                 return Collections.singletonList("Vis Cost");

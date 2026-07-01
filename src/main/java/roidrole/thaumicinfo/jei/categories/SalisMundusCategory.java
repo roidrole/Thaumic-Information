@@ -119,6 +119,11 @@ public class SalisMundusCategory extends AbstractResearchCategory<SalisMundusCat
 			return 0;
 		}
 
+		@Override
+		public String getCategory() {
+			return SalisMundusCategory.UUID;
+		}
+
 		public boolean isValid(){
 			return !this.input.get(1).isEmpty();
 		}

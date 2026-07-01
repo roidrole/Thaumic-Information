@@ -183,7 +183,8 @@ public class HEIPlugin implements IModPlugin {
 
 		//First synchronization is called from ResearchManager itself (its own handler)
 		if(ThaumicInformationConfig.jeiConfig.hideRecipesIfMissingResearch){
-			ResearchManager.runtime = jeiRuntime;
+			//Calling the constructor means an instance exists and is automatically set as an event handler
+			new ResearchManager(jeiRuntime);
 		}
 	}
 
