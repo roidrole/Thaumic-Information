@@ -1,3 +1,7 @@
+## 1.1.2
+- Fixed crash on negative aspect count
+- Slightly improve the aspect cache creation
+
 ## 1.1.1
 - Fixed crash on dedicated servers
 - Removed hard dependency on JEI

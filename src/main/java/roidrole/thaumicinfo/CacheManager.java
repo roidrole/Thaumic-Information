@@ -3,8 +3,7 @@ package roidrole.thaumicinfo;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.*;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.ingredients.VanillaTypes;
 import net.minecraft.init.Items;
@@ -15,7 +14,6 @@ import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
 import roidrole.thaumicinfo.jei.categories.AspectFromItemStackCategory;
-import roidrole.thaumicinfo.utils.ArrayMap;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectHelper;
 import thaumcraft.api.aspects.AspectList;
@@ -77,7 +75,7 @@ public class CacheManager {
 		final AtomicInteger cachedAmount = new AtomicInteger(0);
 		final AtomicLong lastTimeChecked = new AtomicLong(System.currentTimeMillis());
 
-		Map<Aspect, ArrayMap<List<String>>> cache = items
+		Map<Aspect, Int2ObjectSortedMap<List<String>>> cache = items
 			.parallelStream()
 			.filter(stack -> !blacklist.contains(stack.getItem().delegate.name()))
 			//Since Thaumcraft caches ItemStack aspects itself, filtering for empty AspectList is fine
@@ -98,8 +96,8 @@ public class CacheManager {
 						return;
 					}
 					list.aspects.forEach((aspect, count) -> map
-						.computeIfAbsent(aspect, key -> new ArrayMap<>())
-						.computeIfAbsent(count, ArrayList::new)
+						.computeIfAbsent(aspect, key -> new Int2ObjectRBTreeMap<>(Comparator.reverseOrder()))
+						.computeIfAbsent(count, c -> new ArrayList<>())
 						.add(writeItemStack(stack, count, (191 * count / totalCount) + 32))
 					);
 
@@ -111,10 +109,16 @@ public class CacheManager {
 				},
 				(map1, map2) -> {
 					//Merge 2 in 1
-					map2.forEach((key2, value2) -> {
-						ArrayMap<List<String>> value1 = map1.computeIfAbsent(key2, key -> new ArrayMap<>());
-						value2.forEach((count2, strings2) ->
-							value1.computeIfAbsent(count2, ArrayList::new).addAll(strings2));
+					map2.forEach((aspect2, value2) -> {
+						map1.merge(aspect2, value2, (entries1, entries2) -> {
+							entries2.forEach((count2, items2) -> {
+								entries1.merge(count2, items2, (stacks1, stacks2) -> {
+									stacks1.addAll(stacks2);
+									return stacks1;
+								});
+							});
+							return entries1;
+						});
 					});
 				}
 			)
