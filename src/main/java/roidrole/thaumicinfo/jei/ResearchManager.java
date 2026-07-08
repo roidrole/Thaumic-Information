@@ -27,8 +27,8 @@ public class ResearchManager {
     private final Collection<Consumer<EntityPlayerSP>> scheduled;
 
     /**
-     * Both init() and deinit() methods are intended t be called during config changed event.
-     * They are designed not to require a Minecraft/world restart, simply rebuilding the hiding tree.
+     * Both init() and deInit() methods are intended to be called during config changed event.
+     * They are designed not to require a Minecraft/world restart, simply rebuilding/deleting the hiding tree.
      * As such, init() assumes that hideRecipesIfMissingResearch is true, and deInit() assumes the opposite.
      * setRuntime should be called regardless when the JEI runtime is available
      */
