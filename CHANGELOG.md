@@ -1,3 +1,8 @@
+## Unreleased
+- Implemented a research → recipes cache for recipe hiding
+  - This was inspired by [Thaumic JEI Unofficial](https://github.com/JodieRuth/Thaumic-JEI-Unofficial)
+- hideRecipesIfMissingResearch no longer requires a Minecraft/World restart
+
 ## 1.1.2
 - Fixed crash on negative aspect count
 - Slightly improve the aspect cache creation

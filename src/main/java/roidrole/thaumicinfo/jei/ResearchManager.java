@@ -2,9 +2,7 @@ package roidrole.thaumicinfo.jei;
 
 import mezz.jei.api.IJeiRuntime;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -40,6 +38,7 @@ public class ResearchManager {
         }
 		instance = new ResearchManager();
 		MinecraftForge.EVENT_BUS.register(instance);
+        instance.scheduled.add(instance::buildResearchCache);
 	}
     public static void deInit(){
         if(instance == null){
@@ -49,6 +48,8 @@ public class ResearchManager {
         AbstractResearchCategory.categories.stream()
             .flatMap(category -> category.recipes.stream())
             .forEach(wrapper -> runtime.getRecipeRegistry().unhideRecipe(wrapper, wrapper.getCategory()));
+        //So the instance (and the cache) get GCed and to mark it as disabled
+        instance = null;
     }
     public static void setRuntime(IJeiRuntime runtime){
         ResearchManager.runtime = runtime;
@@ -65,13 +66,6 @@ public class ResearchManager {
         if(event.phase == TickEvent.Phase.END && event.player instanceof EntityPlayerSP) {
             scheduled.forEach(consumer -> consumer.accept((EntityPlayerSP) event.player));
             scheduled.clear();
-        }
-    }
-
-    @SubscribeEvent
-    public void onWorldJoin(WorldEvent.Load event){
-        if(event.getWorld() instanceof WorldClient) {
-            scheduled.add(this::buildResearchCache);
         }
     }
 
