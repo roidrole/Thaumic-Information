@@ -1,37 +1,86 @@
 package roidrole.thaumicinfo.jei;
 
 import mezz.jei.api.IJeiRuntime;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import roidrole.thaumicinfo.ThaumicInformation;
 import roidrole.thaumicinfo.jei.categories.AbstractResearchCategory;
 import roidrole.thaumicinfo.jei.categories.AbstractResearchWrapper;
 import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import thaumcraft.api.research.ResearchEvent;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import javax.annotation.Nullable;
+import java.util.*;
+import java.util.function.Consumer;
 
 @SideOnly(Side.CLIENT)
 public class ResearchManager {
-    private final IJeiRuntime runtime;
-    private final Map<String, Collection<AbstractResearchWrapper>> researchCache;
+    //If this is not null, the ResearchManager is working
+    private static @Nullable ResearchManager instance;
+    private static IJeiRuntime runtime;
+    private Map<String, Collection<AbstractResearchWrapper>> researchCache;
+    private final Collection<Consumer<EntityPlayerSP>> scheduled;
 
-    //DO NOT CALL THIS.
-    //This class is a singleton and should only be called from HEIPlugin
-    //Since it doesn't need to be accessed, I forgo the INSTANCE static field
-    public ResearchManager(IJeiRuntime runtime){
-        this.runtime = runtime;
-        MinecraftForge.EVENT_BUS.register(this);
+    /**
+     * Both init() and deinit() methods are intended t be called during config changed event.
+     * They are designed not to require a Minecraft/world restart, simply rebuilding the hiding tree.
+     * As such, init() assumes that hideRecipesIfMissingResearch is true, and deInit() assumes the opposite.
+     * setRuntime should be called regardless when the JEI runtime is available
+     */
+    public static void init(){
+        if(instance != null){
+            return;
+        }
+		instance = new ResearchManager();
+		MinecraftForge.EVENT_BUS.register(instance);
+	}
+    public static void deInit(){
+        if(instance == null){
+            return;
+        }
+        MinecraftForge.EVENT_BUS.unregister(instance);
+        AbstractResearchCategory.categories.stream()
+            .flatMap(category -> category.recipes.stream())
+            .forEach(wrapper -> runtime.getRecipeRegistry().unhideRecipe(wrapper, wrapper.getCategory()));
+    }
+    public static void setRuntime(IJeiRuntime runtime){
+        ResearchManager.runtime = runtime;
+    }
+
+    private ResearchManager(){
+        this.scheduled = new ArrayList<>(2);
+    }
+
+    //Because the world scheduler executes immediately.
+    @SubscribeEvent
+    public void onTick(TickEvent.PlayerTickEvent event){
+
+        if(event.phase == TickEvent.Phase.END && event.player instanceof EntityPlayerSP) {
+            scheduled.forEach(consumer -> consumer.accept((EntityPlayerSP) event.player));
+            scheduled.clear();
+        }
+    }
+
+    @SubscribeEvent
+    public void onWorldJoin(WorldEvent.Load event){
+        if(event.getWorld() instanceof WorldClient) {
+            scheduled.add(this::buildResearchCache);
+        }
+    }
+
+    //TODO: asynchronous? Profile and see
+    private void buildResearchCache(EntityPlayerSP player){
+        ThaumicInformation.LOGGER.info("Hiding locked recipes...");
 
         //Build the researchCache
-        EntityPlayerSP player = Minecraft.getMinecraft().player;
+        //Has to be scheduled because it calls ThaumcraftCapabilities.knowsResearchStrict
         researchCache = AbstractResearchCategory.categories.stream()
             .flatMap(category -> category.recipes.stream())
             .collect(
@@ -80,25 +129,33 @@ public class ResearchManager {
     public void onResearch(ResearchEvent.Research event) {
         String research_direct = event.getResearchKey();
         if(research_direct == null || research_direct.isEmpty()){
-            //TODO: is this legal?
             return;
         }
-        EntityPlayerSP player = Minecraft.getMinecraft().player;
 
         String research = normalizeResearchKey(research_direct);
-        Collection<AbstractResearchWrapper> candidates;
-        if(ThaumcraftCapabilities.knowsResearchStrict(player, research)){
-            //If research was acquired fully, we can remove the whole entry from the cache as it will never get triggered again, saving a bit of memory
-            candidates = researchCache.remove(research);
-        } else {
-            candidates = researchCache.get(research);
-        }
-        candidates.forEach(wrapper -> {
-            if(ThaumcraftCapabilities.knowsResearch(player, wrapper.getResearch())){
-                runtime.getRecipeRegistry().unhideRecipe(wrapper, wrapper.getCategory());
+
+        //Thaumcraft posts the research event *before* actually adding the research.
+        // Also, Minecraft.getMinecraft().addScheduledTask executes instantly, so a custom scheduler is needed
+        scheduled.add((player) -> {
+            Collection<AbstractResearchWrapper> candidates;
+            if(ThaumcraftCapabilities.knowsResearchStrict(player, research)){
+                //If research was acquired fully, we can remove the whole entry from the cache as it will never get triggered again, saving a bit of memory
+                candidates = researchCache.remove(research);
+            } else {
+                candidates = researchCache.get(research);
             }
+            //Some researches are not linked to any recipes.
+            if(candidates == null){
+                return;
+            }
+            candidates.forEach(wrapper -> {
+                if(ThaumcraftCapabilities.knowsResearch(player, wrapper.getResearch())){
+                    runtime.getRecipeRegistry().unhideRecipe(wrapper, wrapper.getCategory());
+                }
+            });
         });
     }
+
 
     /**
      * Remove the @ symbol indicating a research stage

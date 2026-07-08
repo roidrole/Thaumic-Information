@@ -181,10 +181,10 @@ public class HEIPlugin implements IModPlugin {
 			.filter(Objects::nonNull)
 			.forEach(recipe -> registry.hideRecipe(recipe, VanillaRecipeCategoryUid.CRAFTING));
 
-		//First synchronization is called from ResearchManager itself (its own handler)
+		//This is outside the "if" to allow in-game editing
+		ResearchManager.setRuntime(jeiRuntime);
 		if(ThaumicInformationConfig.jeiConfig.hideRecipesIfMissingResearch){
-			//Calling the constructor means an instance exists and is automatically set as an event handler
-			new ResearchManager(jeiRuntime);
+			ResearchManager.init();
 		}
 	}
 

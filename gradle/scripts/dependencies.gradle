@@ -50,7 +50,7 @@ dependencies {
     implementation('curse.maven:codechicken-lib-1-8-242818:2779848')
     implementation('curse.maven:visualores-895539:6495943')
     implementation('curse.maven:just-enough-resources-jer-240630:2728585')
-    runtimeOnly('curse.maven:journeymap-32274:5172461')
+    //runtimeOnly('curse.maven:journeymap-32274:5172461')
 
     //runtimeOnly('curse.maven:tinkers-antique-1242239:8089154')
     //runtimeOnly('curse.maven:mantle-74924:2713386')
