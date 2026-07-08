@@ -23,7 +23,7 @@ public class ResearchManager {
     //If this is not null, the ResearchManager is working
     private static @Nullable ResearchManager instance;
     private static IJeiRuntime runtime;
-    private Map<String, Collection<AbstractResearchWrapper>> researchCache;
+    private Map<String, List<AbstractResearchWrapper>> researchCache;
     private final Collection<Consumer<EntityPlayerSP>> scheduled;
 
     /**
@@ -62,9 +62,10 @@ public class ResearchManager {
     //Because the world scheduler executes immediately.
     @SubscribeEvent
     public void onTick(TickEvent.PlayerTickEvent event){
-
         if(event.phase == TickEvent.Phase.END && event.player instanceof EntityPlayerSP) {
-            scheduled.forEach(consumer -> consumer.accept((EntityPlayerSP) event.player));
+            for(Consumer<EntityPlayerSP> consumer : scheduled){
+                consumer.accept((EntityPlayerSP) event.player);
+            }
             scheduled.clear();
         }
     }
@@ -72,6 +73,7 @@ public class ResearchManager {
     //TODO: asynchronous? Profile and see
     private void buildResearchCache(EntityPlayerSP player){
         ThaumicInformation.LOGGER.info("Hiding locked recipes...");
+        long start = System.currentTimeMillis();
 
         //Build the researchCache
         //Has to be scheduled because it calls ThaumcraftCapabilities.knowsResearchStrict
@@ -88,35 +90,56 @@ public class ResearchManager {
                         for(String researchSplit : wrapper.getResearch().split("&&")){
                             if(researchSplit.contains("||")){
                                 for(String researchSplitSplit : wrapper.getResearch().split("\\|\\|")){
-                                    map.computeIfAbsent(normalizeResearchKey(researchSplitSplit), key -> new ArrayList<>()).add(wrapper);
+                                    addToMap(map, normalizeResearchKey(researchSplitSplit), wrapper);
                                 }
                             } else {
-                                map.computeIfAbsent(normalizeResearchKey(researchSplit), key -> new ArrayList<>()).add(wrapper);
+                                addToMap(map, normalizeResearchKey(researchSplit), wrapper);
                             }
                         }
                     } else if(research.contains("||")){
                         for(String researchSplit : wrapper.getResearch().split("\\|\\|")){
-                            map.computeIfAbsent(normalizeResearchKey(researchSplit), key -> new ArrayList<>()).add(wrapper);
+                            addToMap(map, normalizeResearchKey(researchSplit), wrapper);
                         }
                     } else {
-                        map.computeIfAbsent(normalizeResearchKey(research), key -> new ArrayList<>()).add(wrapper);
+                        addToMap(map, normalizeResearchKey(research), wrapper);
                     }
                 },
                 //Merge 2 in 1
-                (map1, map2) -> {
+                (map1, map2) ->
                     map2.forEach((key2, value2) ->
-                        map1.merge(key2, value2, (exising, incoming) -> {
-                            exising.addAll(incoming);
-                            return exising;
+                        //Setting it to a fixed-sized list is safe because Java doesn't call the accumulator on the result of the combiner.
+                        map1.merge(key2, value2, (existing, incoming) -> {
+                            int sizeExisting = existing.size();
+                            int sizeIncoming = incoming.size();
+                            Object[] newArray = new Object[sizeExisting + sizeIncoming];
+                            //This technically means ArrayList is wasting a single copy — worth it to avoid reflection
+                            System.arraycopy(existing.toArray(), 0, newArray, 0, sizeExisting);
+                            System.arraycopy(incoming.toArray(), 0, newArray, sizeExisting, sizeIncoming);
+                            return Arrays.asList((AbstractResearchWrapper[])newArray);
                         })
-                    );
-                }
+                    )
             )
         ;
         //Only recipes in the cache are those that the player has not unlocked the research for.
-        researchCache.values().forEach(collection ->
-            collection.forEach(wrapper -> runtime.getRecipeRegistry().hideRecipe(wrapper, wrapper.getCategory()))
+        researchCache.values().forEach(list ->
+            list.forEach(wrapper -> runtime.getRecipeRegistry().hideRecipe(wrapper, wrapper.getCategory()))
         );
+        ThaumicInformation.LOGGER.info("Built research cache in {} ms", System.currentTimeMillis() - start);
+    }
+    private <K, V> void addToMap(Map<K, List<V>> map, K key, V value){
+        map.compute(key, (k, existing) -> {
+            if(existing == null){
+                return Collections.singletonList(value);
+            } else if(existing.size() == 1) {
+                List<V> newList = new ArrayList<>(2);
+                newList.add(existing.get(0));
+                newList.add(value);
+                return newList;
+            } else {
+                existing.add(value);
+                return existing;
+            }
+        });
     }
 
     @SubscribeEvent
