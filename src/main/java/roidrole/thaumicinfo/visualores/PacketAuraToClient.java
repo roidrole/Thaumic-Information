@@ -11,6 +11,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import roidrole.thaumicinfo.ThaumicInformationConfig;
 import roidrole.thaumicinfo.mixins.dioptra_aura.TCClientCacheAccessor;
 import roidrole.thaumicinfo.mixins.dioptra_aura.TCDimensionCacheAccessor;
 import thaumcraft.common.world.aura.AuraChunk;
@@ -22,18 +23,28 @@ import java.util.Map;
 public class PacketAuraToClient implements IMessage {
 	int startX;
 	int startZ;
+	private static int range;
+	private static int rangeSq;
 	ByteBuf payload;
+
+	public static void setRadius(int range){
+		PacketAuraToClient.range = 2 * range + 1;
+		PacketAuraToClient.rangeSq = PacketAuraToClient.range * PacketAuraToClient.range;
+	}
+
+	static {
+		setRadius(ThaumicInformationConfig.visualOresConfig.dioptra.radius);
+	}
 
 	public PacketAuraToClient() {}
 
 	public PacketAuraToClient(int startX, int startZ){
-		//Range is hardcoded as a radius of 6 chunks
 		this.startX = startX;
 		this.startZ = startZ;
 		AuraWorld auraWorld = AuraHandler.getAuraWorld(0);
-		this.payload = Unpooled.buffer(169 * (Short.BYTES + Float.BYTES + Float.BYTES));
-		for (int x = startX; x < startX + 13; x++){
-			for (int z = startZ; z < startZ + 13; z++){
+		this.payload = Unpooled.buffer(rangeSq * (Short.BYTES + Float.BYTES + Float.BYTES));
+		for (int x = startX; x < startX + range; x++){
+			for (int z = startZ; z < startZ + range; z++){
 				AuraChunk auraChunk = auraWorld.getAuraChunkAt(x, z);
 				if(auraChunk == null){
 					payload.writeShort(-1);
@@ -62,15 +73,15 @@ public class PacketAuraToClient implements IMessage {
 	public static class Handler implements IMessageHandler<PacketAuraToClient, IMessage> {
 		public IMessage onMessage(final PacketAuraToClient message, MessageContext ctx) {
 			//Doing the AuraFluxPosition recreation off-thread
-			AuraFluxPosition[] contents = new AuraFluxPosition[169];
-			for (int i = 0; i < 169; i++) {
+			AuraFluxPosition[] contents = new AuraFluxPosition[rangeSq];
+			for (int i = 0; i < rangeSq; i++) {
 				short base = message.payload.readShort();
 				if(base == -1){
 					contents[i] = null;
 					continue;
 				}
-				int posX = message.startX + (i / 13);
-				int posZ = message.startZ + (i % 13);
+				int posX = message.startX + (i / range);
+				int posZ = message.startZ + (i % range);
 				contents[i] = new AuraFluxPosition(base, message.payload.readFloat(), message.payload.readFloat(), posX, posZ);
 			}
 

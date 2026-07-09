@@ -4,6 +4,7 @@
   - This was inspired by [Thaumic JEI Unofficial](https://github.com/JodieRuth/Thaumic-JEI-Unofficial)
 - Automatic updating of caches if item count changes
   - This was inspired by [Thaumic JEI Unofficial](https://github.com/JodieRuth/Thaumic-JEI-Unofficial)
+- Config for dioptra range and delay
 
 **Changed**: hideRecipesIfMissingResearch no longer requires a Minecraft/World restart
 

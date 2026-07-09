@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import roidrole.thaumicinfo.Tags;
+import roidrole.thaumicinfo.ThaumicInformationConfig;
 import roidrole.thaumicinfo.visualores.PacketAuraToClient;
 import roidrole.thaumicinfo.visualores.PacketHandler;
 import roidrole.thaumicinfo.visualores.TileDioptraAddition;
@@ -52,7 +53,7 @@ public abstract class TileDioptraMixin extends TileThaumcraft implements TileDio
 	)
 	@SuppressWarnings("all")
 	private void sendToPlayers(CallbackInfo ci){
-		if(this.world.getWorldTime() % 64 != 1){
+		if(this.world.getWorldTime() % ThaumicInformationConfig.visualOresConfig.dioptra.delay != 0){
 			return;
 		}
 		if(!(this.world instanceof WorldServer)){
@@ -70,7 +71,7 @@ public abstract class TileDioptraMixin extends TileThaumcraft implements TileDio
 		if(playersToSend.isEmpty()){
 			return;
 		}
-		PacketAuraToClient packet = new PacketAuraToClient((this.pos.getX() >> 4) - 6, (this.pos.getZ() >> 4) - 6);
+		PacketAuraToClient packet = new PacketAuraToClient((this.pos.getX() >> 4) - ThaumicInformationConfig.visualOresConfig.dioptra.radius, (this.pos.getZ() >> 4) - ThaumicInformationConfig.visualOresConfig.dioptra.radius);
 		for(EntityPlayerMP player : playersToSend){
 			PacketHandler.INSTANCE.sendTo(
 				packet,

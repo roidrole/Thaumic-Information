@@ -7,6 +7,7 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import roidrole.thaumicinfo.jei.ResearchManager;
+import roidrole.thaumicinfo.visualores.PacketAuraToClient;
 
 @Config(
 	modid = Tags.MOD_ID,
@@ -138,12 +139,34 @@ public class ThaumicInformationConfig {
 	@Config.Name("VisualOres Configs")
 	public static final VisualOres visualOresConfig = new VisualOres();
 	public static class VisualOres {
-		@Config.RequiresMcRestart
+
 		@Config.Comment({
-			"Whether thaumic dioptra should send aura data to every online player that interacted with it",
-			"This makes the dioptra auto-update the VisualOres map in a 13x13 chunk square centered on the dioptra"
+			"If enabled, the thaumic dioptra will send aura data to every online player that interacted with it",
+			"This makes the dioptra auto-update the VisualOres map in square centered on the dioptra"
 		})
-		public boolean dioptraUpdatesAura = true;
+		public final Dioptra dioptra = new Dioptra();
+		public static class Dioptra {
+			@Config.Comment({
+				"Should this be allowed",
+				"Warning: toggling this off will make dioptras forget which players interacted with it"
+			})
+			@Config.RequiresMcRestart
+			public boolean enabled = true;
+
+			@Config.Comment({
+				"The radius of the dioptra update square, in chunks",
+				"A radius of 0 means only this chunk it is in, a radius of 1 means a 3x3 square",
+				"The default is 6, so a 13x13 square, which covers the same area as the dioptra visual display"
+			})
+			@Config.RangeInt(min = 0)
+			public int radius = 6;
+
+			@Config.Comment({
+				"The interval (in ticks) between synchronizations"
+			})
+			@Config.RangeInt(min = 1)
+			public int delay = 64;
+		}
 
 		@Config.Comment({
 			"Replaces the default overlay with a constant purple overlay whose opacity depends on flux",
@@ -199,14 +222,16 @@ public class ThaumicInformationConfig {
 	public static class ConfigEventHandler {
 		@SubscribeEvent
 		public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
-			if (event.getModID().equals(Tags.MOD_ID)) {
-				ConfigManager.sync(Tags.MOD_ID, Config.Type.INSTANCE);
-				if(ThaumicInformationConfig.jeiConfig.hideRecipesIfMissingResearch){
-					ResearchManager.init();
-				} else {
-					ResearchManager.deInit();
-				}
+			if (!event.getModID().equals(Tags.MOD_ID)) {
+				return;
 			}
+			ConfigManager.sync(Tags.MOD_ID, Config.Type.INSTANCE);
+			if(ThaumicInformationConfig.jeiConfig.hideRecipesIfMissingResearch){
+				ResearchManager.init();
+			} else {
+				ResearchManager.deInit();
+			}
+			PacketAuraToClient.setRadius(ThaumicInformationConfig.visualOresConfig.dioptra.radius);
 		}
 	}
 

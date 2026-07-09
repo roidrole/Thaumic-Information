@@ -30,7 +30,7 @@ public class LateMixinLoader implements ILateMixinLoader {
 			mixinConfigs.add("mixins."+Tags.MOD_ID+".thaumcraftapi_use_hash.json");
 		}
 		if(Loader.isModLoaded("visualores")){
-			if(ThaumicInformationConfig.visualOresConfig.dioptraUpdatesAura){
+			if(ThaumicInformationConfig.visualOresConfig.dioptra.enabled){
 				mixinConfigs.add("mixins."+Tags.MOD_ID+".dioptra_aura.json");
 			}
 			if(ThaumicInformationConfig.visualOresConfig.overlay.enabled){
