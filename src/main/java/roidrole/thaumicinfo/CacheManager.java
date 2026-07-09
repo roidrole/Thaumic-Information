@@ -13,6 +13,7 @@ import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import roidrole.thaumicinfo.jei.categories.AspectFromItemStackCategory;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectHelper;
@@ -21,6 +22,8 @@ import thaumcraft.api.internal.CommonInternals;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,6 +33,7 @@ public class CacheManager {
 	private static final File JEI_CACHE = new File(ThaumicInformationConfig.general.cachePath, "jei-cache.json");
 	private static final File ASPECT_CACHE = new File(ThaumicInformationConfig.general.cachePath, "aspect-cache.bin");
 	private static final File ENTITY_CACHE = new File(ThaumicInformationConfig.general.cachePath, "entity-cache.bin");
+	private static final Path ITEM_COUNT = Paths.get(ThaumicInformationConfig.general.cachePath, "item-count.bin");
 	public static IModRegistry jeiRegistry;
 
 	static {
@@ -37,15 +41,25 @@ public class CacheManager {
 	}
 
 	public static boolean canRunCaches(){
+		if(ThaumicInformationConfig.general.autoUpdateCaches && parseItemCount()){
+			return false;
+		}
 		return ASPECT_CACHE.isFile() && ENTITY_CACHE.isFile();
 	}
 
 	public static void writeCaches(){
-		boolean genAspectCache = ThaumicInformationConfig.performanceConfig.aspectCache && !ASPECT_CACHE.isFile();
-		boolean genEntityCache = ThaumicInformationConfig.performanceConfig.aspectCache && !ENTITY_CACHE.isFile();
-		//jeiRegistry is null on dedicated servers or if JEI is not installed
-		boolean genJEICache = jeiRegistry != null && ThaumicInformationConfig.jeiConfig.categoryToggle.aspectFromItemStack && !JEI_CACHE.isFile();
-		
+		//If oldItemCount == currentItemCount, it is likely that the caches can stay as is.
+		//This is not a guarantee, but it is better than alternatives (mod list that breaks on mod updates)
+		boolean rightItemCount = !ThaumicInformationConfig.general.autoUpdateCaches || parseItemCount();
+
+		boolean genAspectCache = ThaumicInformationConfig.performanceConfig.aspectCache && (!rightItemCount || !ASPECT_CACHE.isFile());
+		boolean genEntityCache = ThaumicInformationConfig.performanceConfig.aspectCache && (!rightItemCount || !ENTITY_CACHE.isFile());
+		//jeiRegistry is null on dedicated servers or if JEI is not installed. If this is the case, rightItemCount will be true.
+		boolean genJEICache = jeiRegistry != null && ThaumicInformationConfig.jeiConfig.categoryToggle.aspectFromItemStack && (!rightItemCount || !JEI_CACHE.isFile());
+
+		if(!rightItemCount){
+			createItemCount(ITEM_COUNT);
+		}
 		if(genAspectCache){
 			createAspectCache(ASPECT_CACHE);
 		}
@@ -54,6 +68,27 @@ public class CacheManager {
 		}
 		if(genJEICache){
 			createJeiCache(JEI_CACHE);
+		}
+	}
+
+	public static void createItemCount(Path itemCountFile){
+		try(OutputStream writer = Files.newOutputStream(itemCountFile)) {
+			int itemCount = ForgeRegistries.ITEMS.getEntries().size();
+			writer.write((itemCount >>> 24) & 0xFF);
+			writer.write((itemCount >>> 16) & 0xFF);
+			writer.write((itemCount >>>  8) & 0xFF);
+			writer.write((itemCount) & 0xFF);
+		} catch (IOException e) {
+			ThaumicInformation.LOGGER.error("Can't write itemstack count. Caches will get regenerated next launch", e);
+		}
+	}
+
+	public static boolean parseItemCount(){
+		try(InputStream reader = Files.newInputStream(ITEM_COUNT)) {
+			return ((reader.read() << 24) + (reader.read() << 16) + (reader.read() << 8) + (reader.read())) == ForgeRegistries.ITEMS.getEntries().size();
+		} catch (IOException e) {
+			//Likely that the file doesn't exist or is malformed. Rewrite it anyway.
+			return false;
 		}
 	}
 
@@ -109,17 +144,17 @@ public class CacheManager {
 				},
 				(map1, map2) -> {
 					//Merge 2 in 1
-					map2.forEach((aspect2, value2) -> {
+					map2.forEach((aspect2, value2) ->
 						map1.merge(aspect2, value2, (entries1, entries2) -> {
-							entries2.forEach((count2, items2) -> {
+							entries2.forEach((count2, items2) ->
 								entries1.merge(count2, items2, (stacks1, stacks2) -> {
 									stacks1.addAll(stacks2);
 									return stacks1;
-								});
-							});
+								})
+							);
 							return entries1;
-						});
-					});
+						})
+					);
 				}
 			)
 		;

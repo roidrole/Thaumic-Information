@@ -1,7 +1,11 @@
 ## Unreleased
-- Implemented a research → recipes cache for recipe hiding
+**Added**:
+- A research → recipes cache for recipe hiding
   - This was inspired by [Thaumic JEI Unofficial](https://github.com/JodieRuth/Thaumic-JEI-Unofficial)
-- hideRecipesIfMissingResearch no longer requires a Minecraft/World restart
+- Automatic updating of caches if item count changes
+  - This was inspired by [Thaumic JEI Unofficial](https://github.com/JodieRuth/Thaumic-JEI-Unofficial)
+
+**Changed**: hideRecipesIfMissingResearch no longer requires a Minecraft/World restart
 
 ## 1.1.2
 - Fixed crash on negative aspect count
@@ -19,12 +23,12 @@
 - Comments to overlay multiplier config options
 - Purity background to AspectFromItemStackCategory (lighter the more % of the item's aspect this one is)
 
-**Fixed:** 
+**Fixed**: 
 - Off-by-one AspectFromItemStackCategory background
 - Crash if an aspect does not exist in Aspect.aspects
 - Brain in a jar not working with modded fluids
 
-**Changed:** Rebranded as Thaumic Information (thaumicinfo)
+**Changed**: Rebranded as Thaumic Information (thaumicinfo)
 
 ## 1.0.0:
 First release

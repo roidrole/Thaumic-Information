@@ -36,6 +36,10 @@ public class ThaumicInformationConfig {
 		@Config.Comment("The amount of mB of liquid XP per experience point")
 		@Config.RangeInt(min = 0, max = Byte.MAX_VALUE)
 		public int xpPointToMb = 0;
+
+		@Config.RequiresMcRestart
+		@Config.Comment("Should the caches (JEI, aspect and entity) be updated automatically?")
+		public boolean autoUpdateCaches = true;
 	}
 
 
