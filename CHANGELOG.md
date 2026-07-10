@@ -8,6 +8,8 @@
 
 **Changed**: hideRecipesIfMissingResearch no longer requires a Minecraft/World restart
 
+**Removed**: Brain in a jar fluid handling (included in ThaumicTweaker)
+
 ## 1.1.3
 **Fixed** #4 — crash related to JER integration
 

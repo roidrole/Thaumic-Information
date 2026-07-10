@@ -37,9 +37,6 @@ public class LateMixinLoader implements ILateMixinLoader {
 				mixinConfigs.add("mixins."+Tags.MOD_ID+".recolour_overlay.json");
 			}
 		}
-		if(!ThaumicInformationConfig.general.liquidXP.isEmpty()){
-			mixinConfigs.add("mixins."+Tags.MOD_ID+".brainjarfluidhandler.json");
-		}
 		if(ThaumicInformationConfig.jeiConfig.jerCrystals && Loader.isModLoaded("jeresources")){
 			mixinConfigs.add("mixins."+Tags.MOD_ID+".injectjercrystals.json");
 		}
