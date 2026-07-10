@@ -8,6 +8,9 @@
 
 **Changed**: hideRecipesIfMissingResearch no longer requires a Minecraft/World restart
 
+## 1.1.3
+**Fixed** #4 — crash related to JER integration
+
 ## 1.1.2
 - Fixed crash on negative aspect count
 - Slightly improve the aspect cache creation

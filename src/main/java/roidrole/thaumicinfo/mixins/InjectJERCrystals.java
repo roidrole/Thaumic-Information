@@ -41,7 +41,6 @@ public abstract class InjectJERCrystals {
 		HashMap<Aspect, ItemStack> crystalCache = new HashMap<>(Aspect.aspects.size() * 2);
 		HashMap<String, ThaumcraftApi.EntityTags> entityTagCache = new HashMap<>(CommonInternals.scanEntities.size() * 2);
 
-		Aspect.aspects.values().forEach(aspect -> crystalCache.put(aspect, ThaumcraftApiHelper.makeCrystal(aspect)));
 		CommonInternals.scanEntities.forEach(scanEntity -> entityTagCache.put(scanEntity.entityName, scanEntity));
 
 		ExtendedConditional killedByLiquidDeath = new ExtendedConditional(Conditional.killedBy, I18n.format("fluid.liquid_death"));
@@ -54,7 +53,7 @@ public abstract class InjectJERCrystals {
 			float amount = (float)(2 + scanEntity.aspects.visSize()/10)/2.0f;
 			float perCrystalChance = amount/scanEntity.aspects.size();
 			for(Aspect aspect : scanEntity.aspects.aspects.keySet()){
-				LootDrop drop = new LootDrop(crystalCache.get(aspect), perCrystalChance);
+				LootDrop drop = new LootDrop(crystalCache.computeIfAbsent(aspect, ThaumcraftApiHelper::makeCrystal), perCrystalChance);
 				drop.addConditional(killedByLiquidDeath);
 				drop.minDrop = 0;
 				drop.maxDrop = (int)amount;
