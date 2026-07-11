@@ -149,11 +149,27 @@ public class ThaumicInformationConfig {
 		@Config.Comment("Integration for the vis battery. Shows current and max stored vis")
 		public boolean visBattery = true;
 
+		@Config.RequiresMcRestart
+		@Config.Comment("Integration for the vis generator. Shows current energy")
+		public boolean visGenerator = true;
+
+		@Config.RequiresMcRestart
+		@Config.Comment("Integration for the void siphon. Shows current progress")
+		public boolean voidSiphon = true;
+
+		@Config.RequiresMcRestart
+		@Config.Comment("Integration for the arcane ear. Shows note and tone")
+		public boolean arcaneEar = true;
+
 		@Config.Comment("Whether most information requires the goggles")
 		public boolean requireGoggles = true;
 
 		@Config.Comment("If enabled, the aspects will be shown as text instead of their icons. Might help readability")
 		public boolean showAspectsAsText = false;
+
+		@Config.Comment("Integration for the vanilla note block. Shows the currently selected note. Useful for the arcane ear.")
+		public boolean noteBlock = true;
+
 	}
 
 	@Config.Name("VisualOres Configs")
