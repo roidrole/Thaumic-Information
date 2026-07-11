@@ -5,6 +5,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import org.apache.logging.log4j.Logger;
+import roidrole.thaumicinfo.top.ThaumicInformationTOPPlugin;
 import roidrole.thaumicinfo.visualores.PacketHandler;
 
 
@@ -29,6 +30,9 @@ public class ThaumicInformation {
         LOGGER = event.getModLog();
         if(ThaumicInformationConfig.visualOresConfig.dioptra.enabled && Loader.isModLoaded("visualores")){
             PacketHandler.preInit();
+        }
+        if(Loader.isModLoaded("theoneprobe")) {
+            ThaumicInformationTOPPlugin.preInit();
         }
     }
 

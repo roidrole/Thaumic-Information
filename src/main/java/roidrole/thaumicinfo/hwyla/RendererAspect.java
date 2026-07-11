@@ -4,11 +4,9 @@ import mcp.mobius.waila.api.IWailaCommonAccessor;
 import mcp.mobius.waila.api.IWailaTooltipRenderer;
 import mcp.mobius.waila.api.SpecialChars;
 import mcp.mobius.waila.api.impl.ConfigHandler;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import org.apache.commons.lang3.text.WordUtils;
+import roidrole.thaumicinfo.AspectRenderer;
 import roidrole.thaumicinfo.Tags;
 import thaumcraft.api.aspects.Aspect;
 
@@ -25,21 +23,7 @@ public class RendererAspect implements IWailaTooltipRenderer {
 	@Override
 	public void draw(String[] args, IWailaCommonAccessor accessor) {
 		Aspect aspect = Aspect.getAspect(args[0]);
-		drawAspect(aspect);
-	}
-
-	private void drawAspect(Aspect aspect) {
-		GlStateManager.pushMatrix();
-		Minecraft.getMinecraft().getTextureManager().bindTexture(aspect.getImage());
-		GlStateManager.enableBlend();
-
-		GlStateManager.color(
-			(float) ((aspect.getColor() >> 16) & 0xFF) / 255.0F,
-			(float) ((aspect.getColor() >> 8) & 0xFF) / 255.0F,
-			(float) ((aspect.getColor()) & 0xFF) / 255.0F
-		);
-		Gui.drawModalRectWithCustomSizedTexture(0, 0, 0, 0, 8, 8, 8, 8);
-		GlStateManager.popMatrix();
+		AspectRenderer.drawAspect(aspect, 0, 0);
 	}
 
 	/*

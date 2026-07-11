@@ -27,18 +27,6 @@ public class ThaumicInformationConfig {
 		public boolean aspectTooltipInAllGUI = true;
 
 		@Config.RequiresMcRestart
-		@Config.Comment({
-			"The fluid experience contained in the brain in a jar.",
-			"Format: \"<liquid:xp>\", becomes \"xp\" (no quotes)",
-			"Leave empty to disable"
-		})
-		public String liquidXP = "";
-
-		@Config.Comment("The amount of mB of liquid XP per experience point")
-		@Config.RangeInt(min = 0, max = Byte.MAX_VALUE)
-		public int xpPointToMb = 0;
-
-		@Config.RequiresMcRestart
 		@Config.Comment("Should the caches (JEI, aspect and entity) be updated automatically?")
 		public boolean autoUpdateCaches = true;
 	}
@@ -135,6 +123,38 @@ public class ThaumicInformationConfig {
 		}
 	}
 
+	@Config.Name("The One Probe Configs")
+	@Config.Comment({
+		"Only the config to disable the handlers are here.",
+		"The other configurations are in the in-game HWYLA config."
+	})
+	public static final TOP topConfig = new TOP();
+	public static class TOP {
+		@Config.RequiresMcRestart
+		@Config.Comment({
+			"Integration for the brain in a jar. Shows xp contents",
+			"Automatically disabled if the brain in a jar acts as a fluid tank for xp."
+		})
+		public boolean brainInJar = true;
+
+		@Config.RequiresMcRestart
+		@Config.Comment("Integration for essentia tubes. Shows contents and suction")
+		public boolean essentiaTransport = true;
+
+		@Config.RequiresMcRestart
+		@Config.Comment("Integration for goggles display. Only used for the Infusion Matrix's stability")
+		public boolean gogglesDisplay = true;
+
+		@Config.RequiresMcRestart
+		@Config.Comment("Integration for the vis battery. Shows current and max stored vis")
+		public boolean visBattery = true;
+
+		@Config.Comment("Whether most information requires the goggles")
+		public boolean requireGoggles = true;
+
+		@Config.Comment("If enabled, the aspects will be shown as text instead of their icons. Might help readability")
+		public boolean showAspectsAsText = false;
+	}
 
 	@Config.Name("VisualOres Configs")
 	public static final VisualOres visualOresConfig = new VisualOres();
@@ -213,7 +233,7 @@ public class ThaumicInformationConfig {
 		@Config.Comment("Integration for goggles display. Only used for the Infusion Matrix's stability")
 		public boolean gogglesDisplay = true;
 		@Config.RequiresMcRestart
-		@Config.Comment("integration for the vis battery. Shows current and max stored vis")
+		@Config.Comment("Integration for the vis battery. Shows current and max stored vis")
 		public boolean visBattery = true;
 
 	}

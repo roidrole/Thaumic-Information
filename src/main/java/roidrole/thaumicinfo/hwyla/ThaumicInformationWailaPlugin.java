@@ -29,7 +29,7 @@ public class ThaumicInformationWailaPlugin implements IWailaPlugin {
 			registrar.registerBodyProvider(ProviderBlockVisBattery.INSTANCE, BlockVisBattery.class);
 		}
 
-		if(ThaumicInformationConfig.hwylaConfig.brainInJar && ThaumicInformationConfig.general.liquidXP.isEmpty()) {
+		if(ThaumicInformationConfig.hwylaConfig.brainInJar) {
 			registrar.registerBodyProvider(ProviderBrainJar.INSTANCE, TileJarBrain.class);
 		}
 
