@@ -4,6 +4,7 @@ import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.*;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
+import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import mezz.jei.config.Constants;
@@ -83,13 +84,44 @@ public class InfernalFurnaceCategory implements IRecipeCategory<InfernalFurnaceC
 
 	@Override
 	public void setRecipe(IRecipeLayout layout, InfernalFurnaceWrapper wrapper, IIngredients ingredients) {
+		IFocus<?> focus = layout.getFocus();
 		IGuiItemStackGroup guiItemStacks = layout.getItemStacks();
 
 		guiItemStacks.init(0, true, 0, 0);
 		guiItemStacks.init(1, false, 60, 18);
 		guiItemStacks.init(2, false, 85, 18);
 
-		guiItemStacks.set(ingredients);
+		if(focus == null) {
+			guiItemStacks.set(ingredients);
+		} else {
+			ItemStack focusStack = (ItemStack) focus.getValue();
+			List<ItemStack> inputs = ingredients.getInputs(VanillaTypes.ITEM).get(0);
+			List<ItemStack> outputMain = ingredients.getOutputs(VanillaTypes.ITEM).get(0);
+			List<ItemStack> outputBonus = ingredients.getOutputs(VanillaTypes.ITEM).get(1);
+
+			List<ItemStack> toIterate;
+			if(focus.getMode() == IFocus.Mode.INPUT){
+				toIterate = inputs;
+			} else if(focus.getMode() == IFocus.Mode.OUTPUT){
+				toIterate = outputMain;
+			} else {
+				toIterate = Collections.emptyList();
+			}
+			int index = 0;
+			for (; index < inputs.size(); index++) {
+				if(OreDictionary.itemMatches(toIterate.get(index), focusStack, false)){
+					break;
+				}
+			}
+			if(index == inputs.size()){
+				//If no match is found, we are likely focusing on the bonus output, which matches all input and output
+				guiItemStacks.set(ingredients);
+			} else {
+				guiItemStacks.set(0, inputs.get(index));
+				guiItemStacks.set(1, outputMain.get(index));
+				guiItemStacks.set(2, outputBonus);
+			}
+		}
 	}
 
 	@Override

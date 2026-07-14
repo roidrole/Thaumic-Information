@@ -8,8 +8,11 @@
 - TOP Support
   - All features from Thaumic One Proble
   - All TOP support from Congrega Mystica
+- Feature parity between HWYLA and TOP (added missing methods to both)
 
-**Changed**: hideRecipesIfMissingResearch no longer requires a Minecraft/World restart
+**Changed**: 
+- hideRecipesIfMissingResearch no longer requires a Minecraft/World restart
+- The infernal recipe category will now show the input/output corresponding to the focused one instead of iterating through all possibilities. Thanks to WaitingIdly for pointing this out and helping with implementation
 
 **Removed**: Brain in a jar fluid handling (included in ThaumicTweaker)
 
