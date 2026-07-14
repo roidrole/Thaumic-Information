@@ -23,6 +23,7 @@ import java.util.List;
 
 public class ProviderEssentiaTransport implements IWailaDataProvider {
 	public static ProviderEssentiaTransport INSTANCE = new ProviderEssentiaTransport();
+	private ProviderEssentiaTransport(){ }
 
 	@Nonnull
 	@Override

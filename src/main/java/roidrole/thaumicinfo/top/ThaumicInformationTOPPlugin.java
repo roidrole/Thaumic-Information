@@ -7,7 +7,6 @@ import roidrole.thaumicinfo.ThaumicInformationConfig;
 
 import java.util.function.Function;
 
-//TODO: HWYLA: Arcane Ear, Vis Generator, Void syphon, Note Blocks
 //TODO: Merge HWYLA and TOP configs
 public class ThaumicInformationTOPPlugin {
 	public static int SUCTION_ELEMENT_ID = -1;

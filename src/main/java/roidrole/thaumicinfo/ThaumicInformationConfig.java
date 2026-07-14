@@ -251,7 +251,18 @@ public class ThaumicInformationConfig {
 		@Config.RequiresMcRestart
 		@Config.Comment("Integration for the vis battery. Shows current and max stored vis")
 		public boolean visBattery = true;
-
+		@Config.RequiresMcRestart
+		@Config.Comment("Integration for the vis generator. Allow the HWYLA capability to show its power")
+		public boolean visGenerator = true;
+		@Config.RequiresMcRestart
+		@Config.Comment("Integration for the arcane ear. Shows currently selected note")
+		public boolean arcaneEar = true;
+		@Config.RequiresMcRestart
+		@Config.Comment("Integration for the void siphon. Shows the progress of the current 'recipe'")
+		public boolean voidSiphon = true;
+		@Config.RequiresMcRestart
+		@Config.Comment("Integration for the note block. Shows currently playing note")
+		public boolean noteBlock = true;
 	}
 
 	@Mod.EventBusSubscriber(modid = Tags.MOD_ID)

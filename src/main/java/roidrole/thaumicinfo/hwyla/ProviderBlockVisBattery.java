@@ -11,10 +11,12 @@ import thaumcraft.common.blocks.devices.BlockVisBattery;
 import thaumcraft.common.lib.utils.EntityUtils;
 
 import javax.annotation.Nonnull;
+import java.util.Collections;
 import java.util.List;
 
 public class ProviderBlockVisBattery implements IWailaDataProvider {
 	public static ProviderBlockVisBattery INSTANCE = new ProviderBlockVisBattery();
+	private ProviderBlockVisBattery(){ }
 
 	@Nonnull
 	@Override
@@ -37,7 +39,7 @@ public class ProviderBlockVisBattery implements IWailaDataProvider {
 		if (max != 0) {
 			return max;
 		}
-		max = BlockVisBattery.CHARGE.getAllowedValues().size() - 1;
+		max = Collections.max(BlockVisBattery.CHARGE.getAllowedValues());
 		return max;
 	}
 }
