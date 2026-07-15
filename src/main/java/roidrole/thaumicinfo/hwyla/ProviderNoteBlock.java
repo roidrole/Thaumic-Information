@@ -18,7 +18,7 @@ import java.util.List;
 public class ProviderNoteBlock implements IWailaDataProvider {
 	public static ProviderNoteBlock INSTANCE = new ProviderNoteBlock();
 	private ProviderNoteBlock(){ }
-	private static final String NBTKEY = Tags.MOD_ID+":note";
+	public static final String NBTKEY = Tags.MOD_ID+":note";
 
 	@Nonnull
 	@Override

@@ -26,7 +26,7 @@ public abstract class AbstractProvider implements IProbeInfoProvider {
 
 	@Override
 	public void addProbeInfo(ProbeMode mode, IProbeInfo info, EntityPlayer player, World world, IBlockState state, IProbeHitData data) {
-		if(ThaumicInformationConfig.topConfig.requireGoggles && !EntityUtils.hasGoggles(player)){
+		if(ThaumicInformationConfig.hwylaConfig.requireGoggles && !EntityUtils.hasGoggles(player)){
 			return;
 		}
 		TileEntity tile = world.getTileEntity(data.getPos());

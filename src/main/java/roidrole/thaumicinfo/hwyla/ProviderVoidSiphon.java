@@ -6,7 +6,7 @@ import mcp.mobius.waila.api.IWailaDataProvider;
 import mcp.mobius.waila.api.SpecialChars;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import roidrole.thaumicinfo.Tags;
+import roidrole.thaumicinfo.ThaumicInformationConfig;
 import thaumcraft.common.lib.utils.EntityUtils;
 import thaumcraft.common.tiles.crafting.TileVoidSiphon;
 
@@ -24,7 +24,7 @@ public class ProviderVoidSiphon implements IWailaDataProvider {
 		if(!(tile instanceof TileVoidSiphon)){
 			return tooltip;
 		}
-		if (config.getConfig(Tags.MOD_ID+".require_goggles") && !EntityUtils.hasGoggles(accessor.getPlayer())) {
+		if (ThaumicInformationConfig.hwylaConfig.requireGoggles && !EntityUtils.hasGoggles(accessor.getPlayer())) {
 			return tooltip;
 		}
 

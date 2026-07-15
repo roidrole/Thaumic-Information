@@ -19,38 +19,38 @@ public class ThaumicInformationTOPPlugin {
 	public static class Initializer implements Function<ITheOneProbe, Void> {
 		@Override
 		public Void apply(ITheOneProbe probe) {
-			if(ThaumicInformationConfig.topConfig.essentiaTransport){
+			if(ThaumicInformationConfig.hwylaConfig.essentiaTransport){
 				SUCTION_ELEMENT_ID = probe.registerElementFactory(new ElementSuction.Factory());
 				CONTENT_ELEMENT_ID = probe.registerElementFactory(new ElementContent.Factory());
 
 				probe.registerProvider(ProviderEssentiaTransport.INSTANCE);
 			}
 
-			if(ThaumicInformationConfig.topConfig.arcaneEar){
+			if(ThaumicInformationConfig.hwylaConfig.arcaneEar){
 				probe.registerProvider(ProviderArcaneEar.INSTANCE);
 			}
 
-			if(ThaumicInformationConfig.topConfig.gogglesDisplay){
+			if(ThaumicInformationConfig.hwylaConfig.gogglesDisplay){
 				probe.registerProvider(ProviderGogglesDisplay.INSTANCE);
 			}
 
-			if(ThaumicInformationConfig.topConfig.visBattery) {
+			if(ThaumicInformationConfig.hwylaConfig.visBattery) {
 				probe.registerProvider(ProviderVisBattery.INSTANCE);
 			}
 
-			if(ThaumicInformationConfig.topConfig.visGenerator){
+			if(ThaumicInformationConfig.hwylaConfig.visGenerator){
 				probe.registerProvider(ProviderVisGenerator.INSTANCE);
 			}
 
-			if(ThaumicInformationConfig.topConfig.voidSiphon){
+			if(ThaumicInformationConfig.hwylaConfig.voidSiphon){
 				probe.registerProvider(ProviderVoidSiphon.INSTANCE);
 			}
 
-			if(ThaumicInformationConfig.topConfig.brainInJar) {
+			if(ThaumicInformationConfig.hwylaConfig.brainInJar) {
 				probe.registerProvider(ProviderBrainJar.INSTANCE);
 			}
 
-			if(ThaumicInformationConfig.topConfig.noteBlock){
+			if(ThaumicInformationConfig.hwylaConfig.noteBlock){
 				probe.registerProvider(ProviderNote.INSTANCE);
 			}
 			return null;

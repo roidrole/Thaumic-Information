@@ -123,13 +123,13 @@ public class ThaumicInformationConfig {
 		}
 	}
 
-	@Config.Name("The One Probe Configs")
+	@Config.Name("HWYLA/The One Probe Configs")
 	@Config.Comment({
-		"Only the config to disable the handlers are here.",
-		"The other configurations are in the in-game HWYLA config."
+		"Configurations for HWYLA and TOP support",
+		"All integration exists for both mods, and will only be loaded if the mod is present"
 	})
-	public static final TOP topConfig = new TOP();
-	public static class TOP {
+	public static final HWYLA hwylaConfig = new HWYLA();
+	public static class HWYLA {
 		@Config.RequiresMcRestart
 		@Config.Comment({
 			"Integration for the brain in a jar. Shows xp contents",
@@ -167,6 +167,7 @@ public class ThaumicInformationConfig {
 		@Config.Comment("If enabled, the aspects will be shown as text instead of their icons. Might help readability")
 		public boolean showAspectsAsText = false;
 
+		@Config.RequiresMcRestart
 		@Config.Comment("Integration for the vanilla note block. Shows the currently selected note. Useful for the arcane ear.")
 		public boolean noteBlock = true;
 
@@ -227,42 +228,6 @@ public class ThaumicInformationConfig {
 			@Config.Comment("The color of the hue, in format 0xRRGGBB converted to decimal because forge configs")
 			public int color = 0x6F167C;
 		}
-	}
-
-	@Config.Name("HWYLA Configs")
-	@Config.Comment({
-		"Only the config to disable the handlers are here.",
-		"The other configurations are in the in-game HWYLA config."
-	})
-	public static final HWYLA hwylaConfig = new HWYLA();
-	public static class HWYLA {
-		@Config.RequiresMcRestart
-		@Config.Comment({
-			"Integration for the brain in a jar. Shows xp contents",
-			"Automatically disabled if the brain in a jar acts as a fluid tank for xp."
-		})
-		public boolean brainInJar = true;
-		@Config.RequiresMcRestart
-		@Config.Comment("Integration for essentia tubes. Shows contents and suction")
-		public boolean essentiaTransport = true;
-		@Config.RequiresMcRestart
-		@Config.Comment("Integration for goggles display. Only used for the Infusion Matrix's stability")
-		public boolean gogglesDisplay = true;
-		@Config.RequiresMcRestart
-		@Config.Comment("Integration for the vis battery. Shows current and max stored vis")
-		public boolean visBattery = true;
-		@Config.RequiresMcRestart
-		@Config.Comment("Integration for the vis generator. Allow the HWYLA capability to show its power")
-		public boolean visGenerator = true;
-		@Config.RequiresMcRestart
-		@Config.Comment("Integration for the arcane ear. Shows currently selected note")
-		public boolean arcaneEar = true;
-		@Config.RequiresMcRestart
-		@Config.Comment("Integration for the void siphon. Shows the progress of the current 'recipe'")
-		public boolean voidSiphon = true;
-		@Config.RequiresMcRestart
-		@Config.Comment("Integration for the note block. Shows currently playing note")
-		public boolean noteBlock = true;
 	}
 
 	@Mod.EventBusSubscriber(modid = Tags.MOD_ID)

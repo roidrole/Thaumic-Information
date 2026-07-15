@@ -6,7 +6,7 @@ import mcp.mobius.waila.api.IWailaDataProvider;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.ItemStack;
-import roidrole.thaumicinfo.Tags;
+import roidrole.thaumicinfo.ThaumicInformationConfig;
 import thaumcraft.common.blocks.devices.BlockVisBattery;
 import thaumcraft.common.lib.utils.EntityUtils;
 
@@ -21,7 +21,7 @@ public class ProviderBlockVisBattery implements IWailaDataProvider {
 	@Nonnull
 	@Override
 	public List<String> getWailaBody(ItemStack itemStack, List<String> tooltip, IWailaDataAccessor accessor, IWailaConfigHandler config) {
-		if (config.getConfig(Tags.MOD_ID+".require_goggles") && !EntityUtils.hasGoggles(accessor.getPlayer())) {
+		if (ThaumicInformationConfig.hwylaConfig.requireGoggles && !EntityUtils.hasGoggles(accessor.getPlayer())) {
 			return tooltip;
 		}
 		Block block = accessor.getBlock();

@@ -33,7 +33,7 @@ public abstract class AbstractElementAspect implements IElement {
 	public void render(int x, int y) {
 		Minecraft minecraft = Minecraft.getMinecraft();
 		RenderHelper.renderText(minecraft, x, y, string);
-		if(aspect == null || ThaumicInformationConfig.topConfig.showAspectsAsText){
+		if(aspect == null || ThaumicInformationConfig.hwylaConfig.showAspectsAsText){
 			return;
 		}
 		int stringIndex = string.indexOf("  ");
@@ -67,7 +67,7 @@ public abstract class AbstractElementAspect implements IElement {
 	private String getAspectString(){
 		if(this.aspect == null){
 			return I18n.format("tc.resonator3");
-		} else if(ThaumicInformationConfig.topConfig.showAspectsAsText){
+		} else if(ThaumicInformationConfig.hwylaConfig.showAspectsAsText){
 			return this.aspect.getName();
 		} else {
 			return "  ";

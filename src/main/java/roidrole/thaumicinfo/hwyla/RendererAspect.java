@@ -3,11 +3,10 @@ package roidrole.thaumicinfo.hwyla;
 import mcp.mobius.waila.api.IWailaCommonAccessor;
 import mcp.mobius.waila.api.IWailaTooltipRenderer;
 import mcp.mobius.waila.api.SpecialChars;
-import mcp.mobius.waila.api.impl.ConfigHandler;
 import net.minecraft.client.resources.I18n;
 import org.apache.commons.lang3.text.WordUtils;
 import roidrole.thaumicinfo.AspectRenderer;
-import roidrole.thaumicinfo.Tags;
+import roidrole.thaumicinfo.ThaumicInformationConfig;
 import thaumcraft.api.aspects.Aspect;
 
 import javax.annotation.Nonnull;
@@ -33,7 +32,7 @@ public class RendererAspect implements IWailaTooltipRenderer {
 		if(essentiaString.isEmpty()){
 			return I18n.format("tc.resonator3");
 		}
-		if(ConfigHandler.instance().getConfig(Tags.MOD_ID+".aspects_as_text")){
+		if(ThaumicInformationConfig.hwylaConfig.showAspectsAsText){
 			return WordUtils.capitalizeFully(essentiaString);
 		}
 		return SpecialChars.WailaSplitter + SpecialChars.getRenderString("thaumicwaila.aspect", essentiaString);

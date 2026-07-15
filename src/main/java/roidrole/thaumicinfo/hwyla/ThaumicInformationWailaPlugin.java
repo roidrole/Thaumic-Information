@@ -4,7 +4,6 @@ import mcp.mobius.waila.api.IWailaPlugin;
 import mcp.mobius.waila.api.IWailaRegistrar;
 import mcp.mobius.waila.api.WailaPlugin;
 import net.minecraft.tileentity.TileEntityNote;
-import roidrole.thaumicinfo.Tags;
 import roidrole.thaumicinfo.ThaumicInformationConfig;
 import thaumcraft.api.aspects.IEssentiaTransport;
 import thaumcraft.api.items.IGogglesDisplayExtended;
@@ -22,7 +21,6 @@ public class ThaumicInformationWailaPlugin implements IWailaPlugin {
 			registrar.registerBodyProvider(ProviderEssentiaTransport.INSTANCE, IEssentiaTransport.class);
 			registrar.registerNBTProvider(ProviderEssentiaTransport.INSTANCE, IEssentiaTransport.class);
 			registrar.registerTooltipRenderer("thaumicwaila.aspect", new RendererAspect());
-			registrar.addConfig(Tags.MOD_NAME, Tags.MOD_ID+".aspects_as_text", "Show Aspects as Text", false);
 		}
 
 		if(ThaumicInformationConfig.hwylaConfig.gogglesDisplay){
@@ -39,6 +37,7 @@ public class ThaumicInformationWailaPlugin implements IWailaPlugin {
 
 		if(ThaumicInformationConfig.hwylaConfig.arcaneEar){
 			registrar.registerBodyProvider(ProviderArcaneEar.INSTANCE, TileArcaneEar.class);
+			registrar.registerNBTProvider(ProviderArcaneEar.INSTANCE, TileArcaneEar.class);
 		}
 
 		if(ThaumicInformationConfig.hwylaConfig.visGenerator){
@@ -53,8 +52,6 @@ public class ThaumicInformationWailaPlugin implements IWailaPlugin {
 			registrar.registerNBTProvider(ProviderNoteBlock.INSTANCE, TileEntityNote.class);
 			registrar.registerBodyProvider(ProviderNoteBlock.INSTANCE, TileEntityNote.class);
 		}
-
-		registrar.addConfig(Tags.MOD_NAME, Tags.MOD_ID+".require_goggles", "Require Goggles of Revealing",  true);
 	}
 
 }

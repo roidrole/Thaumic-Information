@@ -13,8 +13,11 @@
 **Changed**: 
 - hideRecipesIfMissingResearch no longer requires a Minecraft/World restart
 - The infernal recipe category will now show the input/output corresponding to the focused one instead of iterating through all possibilities. Thanks to WaitingIdly for pointing this out and helping with implementation
+- The configs for HWYLA and TOP are now in the same category
+- Moved some HWYLA configs from the hwyla's config to Thaumic Information's
 
-**Removed**: Brain in a jar fluid handling (included in ThaumicTweaker)
+**Removed**: 
+- Brain in a jar fluid handling (included in ThaumicTweaker)
 
 ## 1.1.3
 **Fixed** #4 — crash related to JER integration

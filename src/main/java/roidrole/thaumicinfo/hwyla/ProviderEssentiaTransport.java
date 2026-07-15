@@ -4,7 +4,6 @@ import mcp.mobius.waila.api.IWailaConfigHandler;
 import mcp.mobius.waila.api.IWailaDataAccessor;
 import mcp.mobius.waila.api.IWailaDataProvider;
 import mcp.mobius.waila.api.SpecialChars;
-import mcp.mobius.waila.api.impl.ConfigHandler;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
@@ -14,7 +13,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import roidrole.thaumicinfo.Tags;
+import roidrole.thaumicinfo.ThaumicInformationConfig;
 import thaumcraft.api.aspects.IEssentiaTransport;
 import thaumcraft.common.lib.utils.EntityUtils;
 
@@ -31,7 +30,7 @@ public class ProviderEssentiaTransport implements IWailaDataProvider {
 		if (!(te instanceof IEssentiaTransport)) {
 			return tag;
 		}
-		if (ConfigHandler.instance().getConfig(Tags.MOD_ID+".require_goggles") && !EntityUtils.hasGoggles(player)) {
+		if (ThaumicInformationConfig.hwylaConfig.requireGoggles && !EntityUtils.hasGoggles(player)) {
 			return tag;
 		}
 
