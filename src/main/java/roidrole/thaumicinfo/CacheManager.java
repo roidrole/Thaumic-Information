@@ -57,7 +57,7 @@ public class CacheManager {
 
 		boolean genAspectCache = ThaumicInformationConfig.performanceConfig.aspectCache && (!rightItemCount || !ASPECT_CACHE.isFile());
 		boolean genEntityCache = ThaumicInformationConfig.performanceConfig.aspectCache && (!rightItemCount || !ENTITY_CACHE.isFile());
-		//jeiRegistry is null on dedicated servers or if JEI is not installed. If this is the case, rightItemCount will be true.
+		//jeiRegistry is null on dedicated servers or if JEI is not installed
 		boolean genJEICache = jeiRegistry != null && ThaumicInformationConfig.jeiConfig.categoryToggle.aspectFromItemStack && (!rightItemCount || !JEI_CACHE.isFile());
 
 		if(!rightItemCount){
