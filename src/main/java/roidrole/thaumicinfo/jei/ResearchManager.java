@@ -16,6 +16,7 @@ import thaumcraft.api.research.ResearchEvent;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 @SideOnly(Side.CLIENT)
@@ -24,7 +25,8 @@ public class ResearchManager {
     private static @Nullable ResearchManager instance;
     private static IJeiRuntime runtime;
     private Map<String, List<AbstractResearchWrapper>> researchCache;
-    private final Collection<Consumer<EntityPlayerSP>> scheduled;
+    private final Queue<Consumer<EntityPlayerSP>> scheduled;
+    private int lastUpdate;
 
     /**
      * Both init() and deInit() methods are intended to be called during config changed event.
@@ -38,7 +40,8 @@ public class ResearchManager {
         }
 		instance = new ResearchManager();
 		MinecraftForge.EVENT_BUS.register(instance);
-        instance.scheduled.add(instance::buildResearchCache);
+        instance.scheduled.offer(instance::buildResearchCache);
+        instance.lastUpdate = 5;
 	}
     public static void deInit(){
         if(instance == null){
@@ -56,21 +59,24 @@ public class ResearchManager {
     }
 
     private ResearchManager(){
-        this.scheduled = new ArrayList<>(2);
+        this.scheduled = new ConcurrentLinkedQueue<>();
     }
 
     //Because the world scheduler executes immediately.
     @SubscribeEvent
     public void onTick(TickEvent.PlayerTickEvent event){
-        if(event.phase == TickEvent.Phase.END && event.player instanceof EntityPlayerSP) {
-            for(Consumer<EntityPlayerSP> consumer : scheduled){
-                consumer.accept((EntityPlayerSP) event.player);
+        if(event.phase == TickEvent.Phase.END && event.player instanceof EntityPlayerSP && lastUpdate-- == 0) {
+            while(true){
+                Consumer<EntityPlayerSP> consumer = scheduled.poll();
+                if(consumer == null){
+                    break;
+                } else {
+                    consumer.accept((EntityPlayerSP) event.player);
+                }
             }
-            scheduled.clear();
         }
     }
 
-    //TODO: asynchronous? Profile and see
     private void buildResearchCache(EntityPlayerSP player){
         ThaumicInformation.LOGGER.info("Hiding locked recipes...");
         long start = System.currentTimeMillis();
@@ -153,7 +159,7 @@ public class ResearchManager {
 
         //Thaumcraft posts the research event *before* actually adding the research.
         // Also, Minecraft.getMinecraft().addScheduledTask executes instantly, so a custom scheduler is needed
-        scheduled.add((player) -> {
+        scheduled.offer((player) -> {
             Collection<AbstractResearchWrapper> candidates;
             if(ThaumcraftCapabilities.knowsResearchStrict(player, research)){
                 //If research was acquired fully, we can remove the whole entry from the cache as it will never get triggered again, saving a bit of memory
@@ -171,6 +177,7 @@ public class ResearchManager {
                 }
             });
         });
+        lastUpdate = 5;
     }
 
 
