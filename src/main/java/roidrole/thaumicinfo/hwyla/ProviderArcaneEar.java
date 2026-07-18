@@ -9,7 +9,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import roidrole.thaumicinfo.Tags;
+import roidrole.thaumicinfo.ThaumicInformationConfig;
 import thaumcraft.common.lib.utils.EntityUtils;
 import thaumcraft.common.tiles.devices.TileArcaneEar;
 
@@ -29,7 +29,7 @@ public class ProviderArcaneEar implements IWailaDataProvider {
 		if (!(tile instanceof TileArcaneEar)) {
 			return tooltip;
 		}
-		if (config.getConfig(Tags.MOD_ID+".require_goggles") && !EntityUtils.hasGoggles(accessor.getPlayer())) {
+		if (ThaumicInformationConfig.hwylaConfig.requireGoggles && !EntityUtils.hasGoggles(accessor.getPlayer())) {
 			return tooltip;
 		}
 		tooltip.add("Note: " + accessor.getNBTData().getByte(NBTKEY));
