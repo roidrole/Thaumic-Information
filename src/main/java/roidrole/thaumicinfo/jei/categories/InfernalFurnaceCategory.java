@@ -91,7 +91,7 @@ public class InfernalFurnaceCategory implements IRecipeCategory<InfernalFurnaceC
 		guiItemStacks.init(1, false, 60, 18);
 		guiItemStacks.init(2, false, 85, 18);
 
-		if(focus == null) {
+		if(focus == null || !(focus.getValue() instanceof ItemStack)) {
 			guiItemStacks.set(ingredients);
 		} else {
 			ItemStack focusStack = (ItemStack) focus.getValue();
