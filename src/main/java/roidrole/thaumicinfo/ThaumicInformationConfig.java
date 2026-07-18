@@ -131,10 +131,7 @@ public class ThaumicInformationConfig {
 	public static final HWYLA hwylaConfig = new HWYLA();
 	public static class HWYLA {
 		@Config.RequiresMcRestart
-		@Config.Comment({
-			"Integration for the brain in a jar. Shows xp contents",
-			"Automatically disabled if the brain in a jar acts as a fluid tank for xp."
-		})
+		@Config.Comment("Integration for the brain in a jar. Shows xp contents")
 		public boolean brainInJar = true;
 
 		@Config.RequiresMcRestart

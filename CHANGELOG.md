@@ -1,4 +1,4 @@
-## Unreleased
+## 1.2.0
 **Added**:
 - A research → recipes cache for recipe hiding
   - This was inspired by [Thaumic JEI Unofficial](https://github.com/JodieRuth/Thaumic-JEI-Unofficial)

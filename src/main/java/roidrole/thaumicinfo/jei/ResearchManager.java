@@ -26,6 +26,14 @@ public class ResearchManager {
     private static IJeiRuntime runtime;
     private Map<String, List<AbstractResearchWrapper>> researchCache;
     private final Queue<Consumer<EntityPlayerSP>> scheduled;
+
+    /**
+     * When running <code>tc research @s all</code>, it would sometimes happen that a CME forms.
+     * Upon further debugging, I concluded that the research packets are sent across multiple client ticks.
+     * Changing to a ConcurrentLinkedQueue fixes the CME, but some recipes are not unhidden because prior researches were not unlocked.
+     * As such, this field holds the heuristic that, if no packets were sent in the last 5 client ticks, the whole block of packet has been sent.
+     * Was this assumption to fail, simply toggling the hide recipes on missing research off and on fixes the wrong display
+     */
     private int lastUpdate;
 
     /**
