@@ -72,7 +72,8 @@ public class ThaumicInformationConfig {
 		@Config.RequiresMcRestart
 		@Config.Comment("Items blacklisted from the checking in the Aspect For ItemStack. Format: 'minecraft:stone'")
 		public String[] jeiBlacklist = {
-			"minecraft:spawn_egg"
+			"minecraft:spawn_egg",
+			"forge:bucketfilled"
 		};
 
 		@Config.RequiresMcRestart

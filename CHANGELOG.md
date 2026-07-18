@@ -1,3 +1,6 @@
+## Unreleased
+**Changed**: Better defaults in jei aspect blacklist
+
 ## 1.2.0
 **Added**:
 - A research → recipes cache for recipe hiding
