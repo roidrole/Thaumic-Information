@@ -155,8 +155,7 @@ public class InfernalFurnaceCategory implements IRecipeCategory<InfernalFurnaceC
 					inRaw = Collections.singletonList(input);
 				}
 			} else {
-				List<ItemStack> inputs = OreDictionary.getOres((String)bonus.in);
-				inRaw = new ArrayList<>(inputs.size());
+				inRaw = OreDictionary.getOres((String)bonus.in);
 			}
 			this.output = new ArrayList<>(inRaw.size());
 			this.input = new ArrayList<>(inRaw.size());
