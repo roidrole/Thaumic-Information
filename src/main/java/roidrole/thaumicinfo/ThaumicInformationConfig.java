@@ -169,6 +169,10 @@ public class ThaumicInformationConfig {
 		@Config.Comment("Integration for the vanilla note block. Shows the currently selected note. Useful for the arcane ear.")
 		public boolean noteBlock = true;
 
+		@Config.RequiresMcRestart
+		@Config.Comment("Integration for the flux condenser. Shows cost and time.")
+		public boolean fluxCondenser = true;
+
 	}
 
 	@Config.Name("VisualOres Configs")

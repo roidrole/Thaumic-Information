@@ -1,3 +1,6 @@
+## Unreleased
+**Added** support for the flux condenser
+
 ## 1.2.1
 **Changed**: Better defaults in jei aspect blacklist
 

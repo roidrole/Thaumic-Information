@@ -31,6 +31,7 @@ All features from Thaumic One Probe, ThaumicWaila and Congrega Mystica TOP suppo
 - Infusion Altar instability
 - Vis Generator's charge
 - Void Siphon progress
+- Flux condenser speed & cost
 - Config to require goggles
 - Config to show the aspects as text or icons
 

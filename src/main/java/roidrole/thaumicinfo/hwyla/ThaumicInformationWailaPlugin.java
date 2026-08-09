@@ -10,6 +10,7 @@ import thaumcraft.api.items.IGogglesDisplayExtended;
 import thaumcraft.common.blocks.devices.BlockVisBattery;
 import thaumcraft.common.tiles.crafting.TileVoidSiphon;
 import thaumcraft.common.tiles.devices.TileArcaneEar;
+import thaumcraft.common.tiles.devices.TileCondenser;
 import thaumcraft.common.tiles.devices.TileJarBrain;
 import thaumcraft.common.tiles.devices.TileVisGenerator;
 
@@ -51,6 +52,11 @@ public class ThaumicInformationWailaPlugin implements IWailaPlugin {
 		if(ThaumicInformationConfig.hwylaConfig.noteBlock){
 			registrar.registerNBTProvider(ProviderNoteBlock.INSTANCE, TileEntityNote.class);
 			registrar.registerBodyProvider(ProviderNoteBlock.INSTANCE, TileEntityNote.class);
+		}
+
+		if(ThaumicInformationConfig.hwylaConfig.fluxCondenser){
+			registrar.registerNBTProvider(ProviderCondenser.INSTANCE, TileCondenser.class);
+			registrar.registerBodyProvider(ProviderCondenser.INSTANCE, TileCondenser.class);
 		}
 	}
 

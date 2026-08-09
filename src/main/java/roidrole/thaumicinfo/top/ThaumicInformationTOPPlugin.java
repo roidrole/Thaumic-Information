@@ -53,6 +53,10 @@ public class ThaumicInformationTOPPlugin {
 			if(ThaumicInformationConfig.hwylaConfig.noteBlock){
 				probe.registerProvider(ProviderNote.INSTANCE);
 			}
+
+			if(ThaumicInformationConfig.hwylaConfig.fluxCondenser){
+				probe.registerProvider(ProviderCondenser.INSTANCE);
+			}
 			return null;
 		}
 	}
