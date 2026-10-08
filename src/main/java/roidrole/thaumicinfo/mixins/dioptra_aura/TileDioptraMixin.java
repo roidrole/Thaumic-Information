@@ -47,7 +47,7 @@ public abstract class TileDioptraMixin extends TileThaumcraft implements TileDio
 	}
 
 	@Inject(
-		//uodate()
+		//update()
 		method = "func_73660_a",
 		at = @At("TAIL")
 	)
