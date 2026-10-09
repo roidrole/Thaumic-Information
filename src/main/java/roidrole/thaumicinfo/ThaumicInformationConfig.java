@@ -76,6 +76,10 @@ public class ThaumicInformationConfig {
 			"forge:bucketfilled"
 		};
 
+		@Config.Comment("If UniDict is loaded, Aspect From ItemStack will ignore the items it hides")
+		@Config.RequiresMcRestart
+		public boolean unidictIntegration = true;
+
 		@Config.RequiresMcRestart
 		@Config.Comment("Should the crafting recipe for Salis Mundus and Triple Meat Treat appear in JEI?")
 		public boolean showSpecialRecipes = true;

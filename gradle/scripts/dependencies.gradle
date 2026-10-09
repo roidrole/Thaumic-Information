@@ -55,6 +55,12 @@ dependencies {
     //runtimeOnly('curse.maven:journeymap-32274:5172461')
     runtimeOnly('curse.maven:hwyla-253449:2568751')
     runtimeOnly('curse.maven:the-one-probe-245211:2667280')
+
+    //JEI Blacklist testing
+    runtimeOnly('curse.maven:immersive-engineering-231951:2974106')
+    runtimeOnly('curse.maven:libvulpes-236541:3801015')
+    runtimeOnly('curse.maven:wanionlib-253043:4623135')
+    runtimeOnly('curse.maven:unidict-244258:3553627')
     //runtimeOnly('curse.maven:tinkers-antique-1242239:8089154')
     //runtimeOnly('curse.maven:mantle-74924:2713386')
     //runtimeOnly('curse.maven:botania-ceu-1179448:8182491')

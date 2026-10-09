@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import mezz.jei.api.IModRegistry;
+import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.VanillaTypes;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -72,6 +73,7 @@ public class CacheManager {
 		if(genJEICache){
 			createJeiCache(JEI_CACHE);
 		}
+		jeiRegistry = null;
 	}
 
 	public static void createItemCount(Path itemCountFile){
@@ -97,6 +99,7 @@ public class CacheManager {
 
 	public static void createJeiCache(File aspectFile){
 		Collection<ItemStack> items = jeiRegistry.getIngredientRegistry().getAllIngredients(VanillaTypes.ITEM);
+		IIngredientBlacklist jeiBlacklist = jeiRegistry.getJeiHelpers().getIngredientBlacklist();
 		long time = System.currentTimeMillis();
 		ThaumicInformation.LOGGER.info("Caching ItemStack Aspects.");
 		ThaumicInformation.LOGGER.info("Trying to cache {} aspects.", items.size());
@@ -116,6 +119,7 @@ public class CacheManager {
 		Map<Aspect, Int2ObjectSortedMap<List<String>>> cache = items
 			.parallelStream()
 			.filter(stack -> !blacklist.contains(stack.getItem().delegate.name()))
+			.filter(stack -> !jeiBlacklist.isIngredientBlacklistedByApi(stack))
 			//Since Thaumcraft caches ItemStack aspects itself, filtering for empty AspectList is fine
 			.filter(stack -> {
 				AspectList list = AspectHelper.getObjectAspects(stack);
@@ -194,7 +198,6 @@ public class CacheManager {
 			ThaumicInformation.LOGGER.error("Can't write aspect file!", e);
 		}
 		ThaumicInformation.LOGGER.info("Wrote aspect file in {} ms", System.currentTimeMillis() - time);
-		jeiRegistry = null;
 	}
 
 	public static void parseJeiCache(IModRegistry registry){
