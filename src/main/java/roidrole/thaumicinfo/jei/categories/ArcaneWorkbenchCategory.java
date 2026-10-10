@@ -114,12 +114,13 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
         @Override
         public void getIngredients(IIngredients ingredients) {
             List<List<ItemStack>> lists = new ArrayList<>();
-            List<Ingredient> input = new ArrayList<>();
-            ItemStack output = null;
+            List<Ingredient> input;
+            ItemStack output;
             if (recipe instanceof ShapelessArcaneRecipe) {
                 input = recipe.getIngredients();
                 output = recipe.getRecipeOutput();
             } else if (recipe instanceof ShapedArcaneRecipe){
+                input = new ArrayList<>();
                 ShapedArcaneRecipe shapedArcaneRecipe = (ShapedArcaneRecipe) recipe;
                 int sizeX = shapedArcaneRecipe.getRecipeWidth();
                 int sizeY = shapedArcaneRecipe.getRecipeHeight();
@@ -135,6 +136,9 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
                     }
                 }
                 output = recipe.getRecipeOutput();
+            } else {
+                input = Collections.emptyList();
+                output = ItemStack.EMPTY;
             }
             for (Ingredient ingredient : input) {
                 lists.add(Arrays.asList(ingredient.getMatchingStacks()));
