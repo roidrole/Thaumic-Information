@@ -2,6 +2,7 @@
 **Added** support for the flux condenser
 
 **Changed**: Aspect From ItemStack now disregards hidden items
+  - To see the effects of this, regenerate the cache (done automatically on item count change)
 
 **Fixed**: Arcane Workbench category now proprerly centers its items
 
