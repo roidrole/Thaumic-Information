@@ -1,4 +1,4 @@
-## Unreleased
+## 1.2.2
 **Added** support for the flux condenser
 
 **Changed**: Aspect From ItemStack now disregards hidden items
