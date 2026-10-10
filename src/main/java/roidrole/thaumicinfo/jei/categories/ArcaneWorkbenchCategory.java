@@ -71,7 +71,7 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
         for (int y = 0; y < sizeY; ++y) {
             for (int x = 0; x < sizeX; ++x) {
                 if (ingredients.getInputs(VanillaTypes.ITEM).size() >= slot) {
-                    recipeLayout.getItemStacks().init(slot, true, 12 + (x * 30) + 30, 36 + 12 + (y) * 30);
+                    recipeLayout.getItemStacks().init(slot, true, 11 + (x * 32) + 30, 11 + (y * 31) + 36);
                     if (ingredients.getInputs(VanillaTypes.ITEM).get(slot - 1) != null) {
                         recipeLayout.getItemStacks().set(slot, ingredients.getInputs(VanillaTypes.ITEM).get(slot - 1));
                     }

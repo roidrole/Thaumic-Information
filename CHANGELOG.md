@@ -3,6 +3,8 @@
 
 **Changed**: Aspect From ItemStack now disregards hidden items
 
+**Fixed**: Arcane Workbench category now proprerly centers its items
+
 ## 1.2.1
 **Changed**: Better defaults in jei aspect blacklist
 
