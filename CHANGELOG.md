@@ -1,3 +1,6 @@
+## 1.2.3
+**Fixed**: Specify dependency on HEI >= 4.25.4 introduced in 1.2.2
+
 ## 1.2.2
 **Added** support for the flux condenser
 

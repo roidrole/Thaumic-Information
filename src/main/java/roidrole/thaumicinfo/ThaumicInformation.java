@@ -14,7 +14,7 @@ import roidrole.thaumicinfo.visualores.PacketHandler;
     name = Tags.MOD_NAME,
     version = Tags.VERSION,
     dependencies =
-        "after:jei@[1.12.2-4.15.0.275,);" +
+        "after:jei@[4.25.4,);" +
         "required-after:thaumcraft@[6.1.BETA20,);" +
         "required-after:thaumicapi;" +
         "required-after:mixinbooter;" +
