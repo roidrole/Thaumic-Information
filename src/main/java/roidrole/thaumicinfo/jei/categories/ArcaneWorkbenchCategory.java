@@ -3,6 +3,7 @@ package roidrole.thaumicinfo.jei.categories;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
@@ -14,7 +15,6 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
-import org.apache.commons.lang3.mutable.MutableInt;
 import roidrole.thaumicinfo.Tags;
 import roidrole.thaumicinfo.jei.AlphaDrawable;
 import thaumcraft.Thaumcraft;
@@ -27,6 +27,7 @@ import thaumcraft.api.crafting.ShapelessArcaneRecipe;
 import thaumcraft.api.items.ItemsTC;
 import thaumcraft.common.items.resources.ItemCrystalEssence;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -39,16 +40,19 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
     //Thaumic Energistics takes this category by UUID. Though it pains me, this is what we must
     public static final String UUID = "THAUMCRAFT_ARCANE_WORKBENCH";
 
-    //Map<Aspect, yPos>
+    //Map<Aspect, index>
     private static final Object2IntMap<Aspect> recipeAspects = new Object2IntOpenHashMap<Aspect>(){{
-        //4 * 22 * index
-        put(Aspect.AIR, 4);
-        put(Aspect.EARTH, 28);
-        put(Aspect.WATER, 50);
-        put(Aspect.FIRE, 72);
-        put(Aspect.ORDER, 94);
-        put(Aspect.ENTROPY, 116);
+        put(Aspect.AIR, 0);
+        put(Aspect.EARTH, 1);
+        put(Aspect.WATER, 2);
+        put(Aspect.FIRE, 3);
+        put(Aspect.ORDER, 4);
+        put(Aspect.ENTROPY, 5);
     }};
+    private static int getCrystalYPos(int index){
+        return 4 + 22 * index;
+    }
+
     private static final ResourceLocation crystalOverlay = new ResourceLocation(Tags.MOD_ID, "textures/gui/crystal_background.png");
 
     @Override
@@ -80,46 +84,55 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
             float green = (float)(color >> 8 & 255) / 255.0F;
             float blue = (float)(color & 255) / 255.0F;
             GlStateManager.color(red, green, blue);
-            Gui.drawModalRectWithCustomSizedTexture(141, entry.getIntValue(), 16, 16, 16, 16, 16, 16);
+            Gui.drawModalRectWithCustomSizedTexture(141, getCrystalYPos(entry.getIntValue()), 16, 16, 16, 16, 16, 16);
         });
         GlStateManager.resetColor();
         GlStateManager.disableBlend();
     }
 
     @Override
-    public void setRecipe(IRecipeLayout recipeLayout, ArcaneWorkbenchWrapper recipeWrapper, IIngredients ingredients) {
+    public void setRecipe(@Nonnull IRecipeLayout recipeLayout, ArcaneWorkbenchWrapper recipeWrapper, @Nonnull IIngredients ingredients) {
         if (recipeWrapper.getRecipe() instanceof ShapelessArcaneRecipe) {
             recipeLayout.setShapeless();
         }
+        IGuiItemStackGroup stackGroup = recipeLayout.getItemStacks();
+        int slot = 0;
+
+        //Note that index 0 is the list of crystals, slightly breaking convention
         List<List<ItemStack>> inputs = ingredients.getInputs(VanillaTypes.ITEM);
 
-        recipeLayout.getItemStacks().init(0, false, 51 - 9 + 30, 7);
-        MutableInt slot = new MutableInt(1);
+        //Output
+        stackGroup.init(slot, false, 51 - 9 + 30, 7);
+        stackGroup.set(slot, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
+        slot++;
+
+        //Input
         for (int y = 0; y < 3; ++y) {
             for (int x = 0; x < 3; ++x) {
-                if(slot.intValue() >= inputs.size()){
+                if(slot >= inputs.size()){
                     break;
                 }
-				recipeLayout.getItemStacks().init(slot.intValue(), true, 11 + (x * 32) + 30, 11 + (y * 31) + 36);
-				if (inputs.get(slot.intValue() - 1) != null) {
-					recipeLayout.getItemStacks().set(slot.intValue(), inputs.get(slot.intValue() - 1));
-				}
-				slot.increment();
-			}
-        }
-        AspectList aspectList = recipeWrapper.getRecipe().getCrystals();
-        if(aspectList != null) {
-            aspectList.aspects.forEach((aspect, count) -> {
-                ItemStack crystal = new ItemStack(ItemsTC.crystalEssence, count);
-                ((ItemCrystalEssence) ItemsTC.crystalEssence).setAspects(crystal, new AspectList().add(aspect, 1));
-                slot.increment();
-                int yPos = recipeAspects.get(aspect);
-                recipeLayout.getItemStacks().init(slot.intValue(), false, 118 + 23, yPos);
-                recipeLayout.getItemStacks().set(slot.intValue(), crystal);
-            });
+                stackGroup.init(slot, true, 11 + (x * 32) + 30, 11 + (y * 31) + 36);
+                List<ItemStack> items = inputs.get(slot);
+                if (items != null) {
+                    stackGroup.set(slot, items);
+                }
+                slot++;
+            }
         }
 
-        recipeLayout.getItemStacks().set(0, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
+        //Crystals
+        List<ItemStack> crystals = inputs.get(0);
+        for (int i = 0; i < crystals.size(); i++) {
+            ItemStack crystal = crystals.get(i);
+            if(crystal == null){
+                continue;
+            }
+            int yPos = getCrystalYPos(i);
+            stackGroup.init(slot, false, 118 + 23, yPos);
+            stackGroup.set(slot, crystal);
+            slot++;
+        }
     }
 
     @Override
@@ -140,8 +153,23 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
         }
 
         @Override
-        public void getIngredients(IIngredients ingredients) {
-            List<List<ItemStack>> lists = new ArrayList<>();
+        public void getIngredients(@Nonnull IIngredients ingredients) {
+            List<List<ItemStack>> inputLists = new ArrayList<>();
+
+            //Crystals
+            AspectList aspectList = recipe.getCrystals();
+            if(aspectList != null) {
+                List<ItemStack> crystals = Arrays.asList(new ItemStack[recipeAspects.size()]);
+                aspectList.aspects.forEach((aspect, count) -> {
+                    ItemStack crystal = new ItemStack(ItemsTC.crystalEssence, count);
+                    ((ItemCrystalEssence) ItemsTC.crystalEssence).setAspects(crystal, new AspectList().add(aspect, 1));
+                    crystals.set(recipeAspects.getInt(aspect), crystal);
+                });
+                inputLists.add(crystals);
+            } else {
+                inputLists.add(Collections.emptyList());
+            }
+
             List<Ingredient> input;
             ItemStack output;
             if (recipe instanceof ShapelessArcaneRecipe) {
@@ -169,9 +197,9 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
                 output = ItemStack.EMPTY;
             }
             for (Ingredient ingredient : input) {
-                lists.add(Arrays.asList(ingredient.getMatchingStacks()));
+                inputLists.add(Arrays.asList(ingredient.getMatchingStacks()));
             }
-            ingredients.setInputLists(VanillaTypes.ITEM, lists);
+            ingredients.setInputLists(VanillaTypes.ITEM, inputLists);
             ingredients.setOutput(VanillaTypes.ITEM, output);
         }
 
