@@ -1,17 +1,21 @@
 package roidrole.thaumicinfo.jei.categories;
 
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
-import org.lwjgl.opengl.GL11;
+import org.apache.commons.lang3.mutable.MutableInt;
+import roidrole.thaumicinfo.Tags;
 import roidrole.thaumicinfo.jei.AlphaDrawable;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.Aspect;
@@ -35,6 +39,18 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
     //Thaumic Energistics takes this category by UUID. Though it pains me, this is what we must
     public static final String UUID = "THAUMCRAFT_ARCANE_WORKBENCH";
 
+    //Map<Aspect, yPos>
+    private static final Object2IntMap<Aspect> recipeAspects = new Object2IntOpenHashMap<Aspect>(){{
+        //4 * 22 * index
+        put(Aspect.AIR, 4);
+        put(Aspect.EARTH, 28);
+        put(Aspect.WATER, 50);
+        put(Aspect.FIRE, 72);
+        put(Aspect.ORDER, 94);
+        put(Aspect.ENTROPY, 116);
+    }};
+    private static final ResourceLocation crystalOverlay = new ResourceLocation(Tags.MOD_ID, "textures/gui/crystal_background.png");
+
     @Override
     public String getUid() {
         return UUID;
@@ -53,10 +69,21 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
     @Override
     public void drawExtras(Minecraft minecraft) {
         minecraft.renderEngine.bindTexture(new ResourceLocation(Thaumcraft.MODID, "textures/gui/gui_researchbook_overlay.png"));
-        GL11.glEnable(3042);
+        GlStateManager.enableBlend();
         Gui.drawModalRectWithCustomSizedTexture(51 - 16 + 30, 0, 40, 6, 32, 32, 512, 512);
         Gui.drawModalRectWithCustomSizedTexture(-18 + 30, 4, 135, 152, 23, 23, 512, 512);
-        GL11.glDisable(3042);
+
+        minecraft.getTextureManager().bindTexture(crystalOverlay);
+        recipeAspects.object2IntEntrySet().forEach(entry -> {
+            int color = entry.getKey().getColor();
+            float red = (float)(color >> 16 & 255) / 255.0F;
+            float green = (float)(color >> 8 & 255) / 255.0F;
+            float blue = (float)(color & 255) / 255.0F;
+            GlStateManager.color(red, green, blue);
+            Gui.drawModalRectWithCustomSizedTexture(141, entry.getIntValue(), 16, 16, 16, 16, 16, 16);
+        });
+        GlStateManager.resetColor();
+        GlStateManager.disableBlend();
     }
 
     @Override
@@ -64,31 +91,32 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
         if (recipeWrapper.getRecipe() instanceof ShapelessArcaneRecipe) {
             recipeLayout.setShapeless();
         }
+        List<List<ItemStack>> inputs = ingredients.getInputs(VanillaTypes.ITEM);
+
         recipeLayout.getItemStacks().init(0, false, 51 - 9 + 30, 7);
-        int sizeX = 3;
-        int sizeY = 3;
-        int slot = 1;
-        for (int y = 0; y < sizeY; ++y) {
-            for (int x = 0; x < sizeX; ++x) {
-                if (ingredients.getInputs(VanillaTypes.ITEM).size() >= slot) {
-                    recipeLayout.getItemStacks().init(slot, true, 11 + (x * 32) + 30, 11 + (y * 31) + 36);
-                    if (ingredients.getInputs(VanillaTypes.ITEM).get(slot - 1) != null) {
-                        recipeLayout.getItemStacks().set(slot, ingredients.getInputs(VanillaTypes.ITEM).get(slot - 1));
-                    }
-                    ++slot;
+        MutableInt slot = new MutableInt(1);
+        for (int y = 0; y < 3; ++y) {
+            for (int x = 0; x < 3; ++x) {
+                if(slot.intValue() >= inputs.size()){
+                    break;
                 }
-            }
+				recipeLayout.getItemStacks().init(slot.intValue(), true, 11 + (x * 32) + 30, 11 + (y * 31) + 36);
+				if (inputs.get(slot.intValue() - 1) != null) {
+					recipeLayout.getItemStacks().set(slot.intValue(), inputs.get(slot.intValue() - 1));
+				}
+				slot.increment();
+			}
         }
-        int crystalAmount = 0;
-        if (recipeWrapper.getRecipe().getCrystals() != null) {
-            for (Aspect aspect : recipeWrapper.getRecipe().getCrystals().getAspectsSortedByAmount()) {
-                ItemStack crystal = new ItemStack(ItemsTC.crystalEssence);
+        AspectList aspectList = recipeWrapper.getRecipe().getCrystals();
+        if(aspectList != null) {
+            aspectList.aspects.forEach((aspect, count) -> {
+                ItemStack crystal = new ItemStack(ItemsTC.crystalEssence, count);
                 ((ItemCrystalEssence) ItemsTC.crystalEssence).setAspects(crystal, new AspectList().add(aspect, 1));
-                crystal.setCount(recipeWrapper.getRecipe().getCrystals().getAmount(aspect));
-                recipeLayout.getItemStacks().init(slot + crystalAmount, false, 118 + 23, 6 + 22 * crystalAmount);
-                recipeLayout.getItemStacks().set(slot + crystalAmount, crystal);
-                ++crystalAmount;
-            }
+                slot.increment();
+                int yPos = recipeAspects.get(aspect);
+                recipeLayout.getItemStacks().init(slot.intValue(), false, 118 + 23, yPos);
+                recipeLayout.getItemStacks().set(slot.intValue(), crystal);
+            });
         }
 
         recipeLayout.getItemStacks().set(0, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
