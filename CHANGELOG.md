@@ -2,6 +2,11 @@
 **Added**:
 - Dynamic wrapping for aspects in the crucible and infusion tab
 
+**Fixed**: 
+- Compatibility with JEI versions 4.15 to 4.25
+  - If `IIngredientBlacklist::isIngredientBlacklistedByApi` is not found, the blacklist will fall back to `IIngredientBlacklist::isIngredientBlacklisted`.
+  - This means that manually blacklisted ingredients also get blacklisted on old JEI versions.
+
 ## 1.2.3
 **Fixed**: Specify dependency on HEI >= 4.25.4 introduced in 1.2.2
 

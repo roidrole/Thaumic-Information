@@ -32,6 +32,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Predicate;
 
 public class CacheManager {
 	private static final File JEI_CACHE = new File(ThaumicInformationConfig.general.cachePath, "jei-cache.json");
@@ -116,10 +117,19 @@ public class CacheManager {
 		final AtomicInteger cachedAmount = new AtomicInteger(0);
 		final AtomicLong lastTimeChecked = new AtomicLong(System.currentTimeMillis());
 
+		Predicate<ItemStack> isBlacklisted;
+		try {
+			IIngredientBlacklist.class.getMethod("isIngredientBlacklistedByApi", Object.class);
+			isBlacklisted = jeiBlacklist::isIngredientBlacklistedByApi;
+		} catch (NoSuchMethodException e) {
+			isBlacklisted = jeiBlacklist::isIngredientBlacklisted;
+		}
+		Predicate<ItemStack> finalIsBlacklisted = isBlacklisted;
+
 		Map<Aspect, Int2ObjectSortedMap<List<String>>> cache = items
 			.parallelStream()
 			.filter(stack -> !blacklist.contains(stack.getItem().delegate.name()))
-			.filter(stack -> !jeiBlacklist.isIngredientBlacklistedByApi(stack))
+			.filter(stack -> !finalIsBlacklisted.test(stack))
 			//Since Thaumcraft caches ItemStack aspects itself, filtering for empty AspectList is fine
 			.filter(stack -> {
 				AspectList list = AspectHelper.getObjectAspects(stack);
