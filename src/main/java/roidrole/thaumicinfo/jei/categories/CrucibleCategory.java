@@ -8,9 +8,9 @@ import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
 import roidrole.thaumicinfo.HEIPlugin;
 import roidrole.thaumicinfo.Tags;
 import roidrole.thaumicinfo.jei.AlphaDrawable;
@@ -74,9 +74,9 @@ public class CrucibleCategory extends AbstractResearchCategory<CrucibleCategory.
     @Override
     public void drawExtras(Minecraft minecraft) {
         minecraft.renderEngine.bindTexture(new ResourceLocation("thaumcraft", "textures/gui/gui_researchbook_overlay.png"));
-        GL11.glEnable(3042);
+        GlStateManager.enableBlend();
         Gui.drawModalRectWithCustomSizedTexture(16, 6, 199, 168, 26, 26, 512, 512);
-        GL11.glDisable(3042);
+        GlStateManager.disableBlend();
     }
 
     @Override

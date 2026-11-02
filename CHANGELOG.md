@@ -2,6 +2,9 @@
 **Added**:
 - Dynamic wrapping for aspects in the crucible and infusion tab
 
+**Changed**:
+- Moved rendering stuff to GlStateManager. Should help with transparency issues
+
 **Fixed**: 
 - Compatibility with JEI versions 4.15 to 4.25
   - If `IIngredientBlacklist::isIngredientBlacklistedByApi` is not found, the blacklist will fall back to `IIngredientBlacklist::isIngredientBlacklisted`.

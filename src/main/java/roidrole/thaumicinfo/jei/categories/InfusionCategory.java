@@ -9,6 +9,7 @@ import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
@@ -17,7 +18,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
-import org.lwjgl.opengl.GL11;
 import roidrole.thaumicinfo.HEIPlugin;
 import roidrole.thaumicinfo.Tags;
 import roidrole.thaumicinfo.jei.AlphaDrawable;
@@ -57,9 +57,9 @@ public class InfusionCategory extends AbstractResearchCategory<InfusionCategory.
     @Override
     public void drawExtras(Minecraft minecraft) {
         minecraft.renderEngine.bindTexture(new ResourceLocation(Thaumcraft.MODID, "textures/gui/gui_researchbook_overlay.png"));
-        GL11.glEnable(3042);
+        GlStateManager.enableBlend();
         Gui.drawModalRectWithCustomSizedTexture(27 + 30, 0, 40, 6, 32, 32, 512, 512);
-        GL11.glDisable(3042);
+        GlStateManager.disableBlend();
     }
 
     @Override

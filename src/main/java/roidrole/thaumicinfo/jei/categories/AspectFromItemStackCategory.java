@@ -9,10 +9,10 @@ import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
 import roidrole.thaumicinfo.HEIPlugin;
 import roidrole.thaumicinfo.Tags;
 import roidrole.thaumicinfo.ThaumicInformationConfig;
@@ -59,9 +59,9 @@ public class AspectFromItemStackCategory implements IRecipeCategory<AspectFromIt
     @Override
     public void drawExtras(Minecraft minecraft) {
         minecraft.renderEngine.bindTexture(new ResourceLocation("thaumicjei", "textures/gui/gui.png"));
-        GL11.glEnable(3042);
+        GlStateManager.enableBlend();
         Gui.drawModalRectWithCustomSizedTexture(-66 + 81 - 9, 31, 0, 0, 164, 74, 256, 256);
-        GL11.glDisable(3042);
+        GlStateManager.disableBlend();
     }
 
     @Override

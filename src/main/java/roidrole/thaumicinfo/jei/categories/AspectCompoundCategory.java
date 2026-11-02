@@ -7,9 +7,9 @@ import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeCategory;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.text.TextFormatting;
-import org.lwjgl.opengl.GL11;
 import roidrole.thaumicinfo.HEIPlugin;
 import roidrole.thaumicinfo.Tags;
 import thaumcraft.api.aspects.Aspect;
@@ -86,9 +86,9 @@ public class AspectCompoundCategory implements IRecipeCategory<AspectCompoundCat
 
         @Override
         public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
-            GL11.glPushMatrix();
-            GL11.glEnable(3042);
-            GL11.glScaled(0.5, 0.5, 0.5);
+            GlStateManager.pushMatrix();
+            GlStateManager.enableBlend();
+            GlStateManager.scale(0.5, 0.5, 0.5);
             String name;
             name = TextFormatting.DARK_GRAY + aspect.getName();
             minecraft.fontRenderer.drawString(name, 32 - minecraft.fontRenderer.getStringWidth(name) / 2, 36, 0);
@@ -96,8 +96,7 @@ public class AspectCompoundCategory implements IRecipeCategory<AspectCompoundCat
             minecraft.fontRenderer.drawString(name, 109 - minecraft.fontRenderer.getStringWidth(name) / 2, 36, 0);
             name = TextFormatting.DARK_GRAY + aspect.getComponents()[1].getName();
             minecraft.fontRenderer.drawString(name, 181 - minecraft.fontRenderer.getStringWidth(name) / 2, 36, 0);
-            GL11.glDisable(3042);
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         }
     }
 }
