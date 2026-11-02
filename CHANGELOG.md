@@ -1,3 +1,7 @@
+## Unreleased
+**Added**:
+- Dynamic wrapping for aspects in the crucible and infusion tab
+
 ## 1.2.3
 **Fixed**: Specify dependency on HEI >= 4.25.4 introduced in 1.2.2
 

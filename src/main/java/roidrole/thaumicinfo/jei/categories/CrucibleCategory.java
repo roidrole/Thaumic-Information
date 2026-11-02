@@ -1,9 +1,11 @@
 package roidrole.thaumicinfo.jei.categories;
 
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
+import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.item.ItemStack;
@@ -12,6 +14,7 @@ import org.lwjgl.opengl.GL11;
 import roidrole.thaumicinfo.HEIPlugin;
 import roidrole.thaumicinfo.Tags;
 import roidrole.thaumicinfo.jei.AlphaDrawable;
+import roidrole.thaumicinfo.utils.ThaumicInfoUtils;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.AspectList;
@@ -19,16 +22,12 @@ import thaumcraft.api.blocks.BlocksTC;
 import thaumcraft.api.crafting.CrucibleRecipe;
 import thaumcraft.api.crafting.IThaumcraftRecipe;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class CrucibleCategory extends AbstractResearchCategory<CrucibleCategory.CrucibleWrapper> {
 
     public static final String UUID = Tags.MOD_ID + ".crucible";
-    public static final int ASPECT_Y = 66;
+    public static final int ASPECT_Y = 80;
     public static final int ASPECT_X = 66;
     public static final int SPACE = 22;
 
@@ -55,12 +54,20 @@ public class CrucibleCategory extends AbstractResearchCategory<CrucibleCategory.
         recipeLayout.getItemStacks().init(1, true, 2, 2);
         recipeLayout.getItemStacks().set(1, ingredients.getInputs(VanillaTypes.ITEM).get(0));
 
-        int center = (ingredients.getInputs(HEIPlugin.ASPECT_LIST).size() * SPACE) / 2;
-        int x = 0;
-        for (List<AspectList> aspectList : ingredients.getInputs(HEIPlugin.ASPECT_LIST)) {
-            recipeLayout.getIngredientsGroup(HEIPlugin.ASPECT_LIST).init(x + 1, true, ASPECT_X - center + x * SPACE, ASPECT_Y);
-            recipeLayout.getIngredientsGroup(HEIPlugin.ASPECT_LIST).set(x + 1, aspectList);
-            ++x;
+        IGuiIngredientGroup<AspectList> ingredientGroup = recipeLayout.getIngredientsGroup(HEIPlugin.ASPECT_LIST);
+        List<List<AspectList>> inputs = ingredients.getInputs(HEIPlugin.ASPECT_LIST);
+        int maxY = MathUtil.divideCeil(inputs.size(), 4);
+        int startY = ASPECT_Y - (int)((float)maxY/2 * SPACE);
+        for (int y = 0; y < maxY; y++) {
+            int yCoord = startY + SPACE * y;
+            int maxX = Math.min(4, inputs.size() - 4 * y);
+            int startX = ASPECT_X - (maxX * SPACE) / 2;
+            for (int x = 0; x < maxX; x++) {
+                int slot = y * 4 + x;
+                List<AspectList> ingredient = inputs.get(slot);
+                ingredientGroup.init(slot, true, startX + x * SPACE, yCoord);
+                ingredientGroup.set(slot, ingredient);
+            }
         }
     }
 
@@ -96,7 +103,7 @@ public class CrucibleCategory extends AbstractResearchCategory<CrucibleCategory.
         @Override
         public void getIngredients(IIngredients ingredients) {
             ingredients.setInputLists(VanillaTypes.ITEM, Collections.singletonList(Arrays.asList(recipe.getCatalyst().getMatchingStacks())));
-            ingredients.setInputs(HEIPlugin.ASPECT_LIST, Arrays.stream(recipe.getAspects().getAspectsSortedByAmount()).map(aspect -> new AspectList().add(aspect, recipe.getAspects().getAmount(aspect))).collect(Collectors.toList()));
+            ingredients.setInputs(HEIPlugin.ASPECT_LIST, ThaumicInfoUtils.splitAspectList(recipe.getAspects()));
             ingredients.setOutput(VanillaTypes.ITEM, recipe.getRecipeOutput());
         }
 

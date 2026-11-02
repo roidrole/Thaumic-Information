@@ -13,10 +13,10 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.oredict.OreDictionary;
-import roidrole.thaumicinfo.HEIPlugin;
 import roidrole.thaumicinfo.Tags;
 import roidrole.thaumicinfo.mixins.accessors.AccessorDustTriggerOre;
 import roidrole.thaumicinfo.mixins.accessors.AccessorDustTriggerSimple;
+import roidrole.thaumicinfo.utils.ThaumicInfoUtils;
 import thaumcraft.api.crafting.IDustTrigger;
 import thaumcraft.api.items.ItemsTC;
 import thaumcraft.common.lib.crafting.DustTriggerOre;
@@ -141,7 +141,7 @@ public class SalisMundusCategory extends AbstractResearchCategory<SalisMundusCat
 				target.getSubBlocks(target.getCreativeTab(), (NonNullList<ItemStack>) inputs);
 			}
 			this.input = Arrays.asList(salisMundus, inputs);
-			this.output = HEIPlugin.nestedSingletonList(simpleTrigger.getResult());
+			this.output = ThaumicInfoUtils.nestedSingletonList(simpleTrigger.getResult());
 			this.research = simpleTrigger.getResearch();
 		}
 	}
@@ -149,7 +149,7 @@ public class SalisMundusCategory extends AbstractResearchCategory<SalisMundusCat
 		public SalisMundusOreWrapper(DustTriggerOre trigger) {
 			AccessorDustTriggerOre oreTrigger = (AccessorDustTriggerOre) trigger;
 			this.input = Arrays.asList(salisMundus, OreDictionary.getOres(oreTrigger.getTarget()));
-			this.output = HEIPlugin.nestedSingletonList(oreTrigger.getResult());
+			this.output = ThaumicInfoUtils.nestedSingletonList(oreTrigger.getResult());
 			this.research = oreTrigger.getResearch();
 		}
 	}

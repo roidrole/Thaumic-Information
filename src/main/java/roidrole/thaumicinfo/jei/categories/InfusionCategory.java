@@ -1,9 +1,12 @@
 package roidrole.thaumicinfo.jei.categories;
 
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.IGuiIngredientGroup;
+import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
+import mezz.jei.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.resources.I18n;
@@ -18,6 +21,7 @@ import org.lwjgl.opengl.GL11;
 import roidrole.thaumicinfo.HEIPlugin;
 import roidrole.thaumicinfo.Tags;
 import roidrole.thaumicinfo.jei.AlphaDrawable;
+import roidrole.thaumicinfo.utils.ThaumicInfoUtils;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.AspectList;
@@ -27,13 +31,12 @@ import thaumcraft.api.crafting.InfusionRecipe;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class InfusionCategory extends AbstractResearchCategory<InfusionCategory.InfusionWrapper> {
 
     public static final String UUID = Tags.MOD_ID + ".infusion";
-    public static final int ASPECT_Y = 135;
-    public static final int ASPECT_X = 46;
+    public static final int ASPECT_Y = 130;
+    public static final int ASPECT_X = 76;
     public static final int SPACE = 22;
 
     @Override
@@ -48,7 +51,7 @@ public class InfusionCategory extends AbstractResearchCategory<InfusionCategory.
 
     @Override
     public IDrawable getBackground() {
-        return new AlphaDrawable(new ResourceLocation(Thaumcraft.MODID, "textures/gui/gui_researchbook_overlay.png"), 413, 154, 86, 86, 40, 44, 30, 30);
+        return new AlphaDrawable(new ResourceLocation(Thaumcraft.MODID, "textures/gui/gui_researchbook_overlay.png"), 413, 154, 86, 86, 40, 64, 30, 30);
     }
 
     @Override
@@ -61,24 +64,43 @@ public class InfusionCategory extends AbstractResearchCategory<InfusionCategory.
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, InfusionWrapper recipeWrapper, IIngredients ingredients) {
-        recipeLayout.getItemStacks().init(0, false, 34 + 30, 7);
-        recipeLayout.getItemStacks().set(0, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
+
+        //ItemStacks
+        IGuiItemStackGroup guiGroup = recipeLayout.getItemStacks();
+        guiGroup.init(0, false, 34 + 30, 7);
+        guiGroup.set(0, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
         int slot = 1;
         float currentRotation = -90.0F;
         for (List<ItemStack> stacks : ingredients.getInputs(VanillaTypes.ITEM)) {
-            if (slot == 1) recipeLayout.getItemStacks().init(slot, true, 34 + 30, 75);
-            else
-                recipeLayout.getItemStacks().init(slot, true, 30 + (int) (MathHelper.cos((float) (currentRotation / 180.0F * Math.PI)) * 40.0F) + 34, (int) (MathHelper.sin(currentRotation / 180.0F * 3.1415927F) * 40.0F) + 75);
-            recipeLayout.getItemStacks().set(slot, stacks);
+            if (slot == 1) {
+                guiGroup.init(slot, true, 34 + 30, 75);
+            }
+            else {
+                float angle = (float) (currentRotation / 180.0F * Math.PI);
+                guiGroup.init(slot, true,
+                    30 + (int) (MathHelper.cos(angle) * 40.0F) + 34,
+                    (int) (MathHelper.sin(angle) * 40.0F) + 75
+                );
+            }
+            guiGroup.set(slot, stacks);
             currentRotation += (360f / recipeWrapper.recipe.getComponents().size());
             ++slot;
         }
-        int center = (ingredients.getInputs(HEIPlugin.ASPECT_LIST).size() * SPACE) / 2;
-        int x = 0;
-        for (List<AspectList> aspectList : ingredients.getInputs(HEIPlugin.ASPECT_LIST)) {
-            recipeLayout.getIngredientsGroup(HEIPlugin.ASPECT_LIST).init(x + slot, true, 30 + ASPECT_X - center + x * SPACE, ASPECT_Y);
-            recipeLayout.getIngredientsGroup(HEIPlugin.ASPECT_LIST).set(x + slot, aspectList);
-            ++x;
+
+        //Aspects
+        IGuiIngredientGroup<AspectList> guiGroupAspects = recipeLayout.getIngredientsGroup(HEIPlugin.ASPECT_LIST);
+        List<List<AspectList>> aspects = ingredients.getInputs(HEIPlugin.ASPECT_LIST);
+        int rowAmount = MathUtil.divideCeil(aspects.size(), 7);
+        int minY = (rowAmount == 1)? ASPECT_Y + SPACE/2: ASPECT_Y;
+		for (int y = 0; y < rowAmount; y++) {
+            int yCoord = minY + SPACE * y;
+            int maxX = Math.min(aspects.size() - 7 * y, 7);
+            int startX = ASPECT_X - (maxX * SPACE) / 2;
+            for (int x = 0; x < maxX; x++) {
+                slot = y * 7 + x;
+                guiGroupAspects.init(slot, true, startX + x * SPACE, yCoord);
+                guiGroupAspects.set(slot, aspects.get(slot));
+            }
         }
     }
 
@@ -125,7 +147,7 @@ public class InfusionCategory extends AbstractResearchCategory<InfusionCategory.
                 inputs.add(Arrays.asList(comp.getMatchingStacks()));
             }
             ingredients.setInputLists(VanillaTypes.ITEM, inputs);
-            ingredients.setInputs(HEIPlugin.ASPECT_LIST, Arrays.stream(recipe.aspects.getAspectsSortedByAmount()).map(aspect -> new AspectList().add(aspect, recipe.aspects.getAmount(aspect))).collect(Collectors.toList()));
+            ingredients.setInputs(HEIPlugin.ASPECT_LIST, ThaumicInfoUtils.splitAspectList(recipe.aspects));
         }
 
         @Override
@@ -133,7 +155,7 @@ public class InfusionCategory extends AbstractResearchCategory<InfusionCategory.
             super.drawInfo(minecraft, recipeWidth, recipeHeight, mouseX, mouseY);
             int instability = Math.min(5, recipe.instability / 2);
             String inst = TextFormatting.DARK_GRAY + new TextComponentTranslation("tc.inst").getFormattedText() + new TextComponentTranslation("tc.inst." + instability).getUnformattedText();
-            minecraft.fontRenderer.drawString(inst, (recipeWidth / 2) - (minecraft.fontRenderer.getStringWidth(inst) / 2), 158, 0);
+            minecraft.fontRenderer.drawString(inst, (recipeWidth / 2) - (minecraft.fontRenderer.getStringWidth(inst) / 2), 178, 0);
         }
 
         @Override

@@ -187,9 +187,4 @@ public class HEIPlugin implements IModPlugin {
 			ResearchManager.init();
 		}
 	}
-
-	//Helper method to work with JEI
-	public static <T> List<List<T>> nestedSingletonList(T element){
-		return Collections.singletonList(Collections.singletonList(element));
-	}
 }
