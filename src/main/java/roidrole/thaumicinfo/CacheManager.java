@@ -240,7 +240,6 @@ public class CacheManager {
 					}
 				}
 				if(index != 0){
-					wrappers.add(new AspectFromItemStackCategory.AspectFromItemStackWrapper(aspectList, stacks, purities));
 					byte[] puritiesNew = new byte[index];
 					System.arraycopy(purities, 0, puritiesNew, 0, index);
 					ItemStack[] stacksNew = new ItemStack[index];
