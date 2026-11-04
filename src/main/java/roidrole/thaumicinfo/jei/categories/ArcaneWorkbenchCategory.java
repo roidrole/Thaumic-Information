@@ -1,5 +1,7 @@
 package roidrole.thaumicinfo.jei.categories;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import mezz.jei.api.gui.IDrawable;
@@ -15,6 +17,7 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.common.crafting.IShapedRecipe;
 import roidrole.thaumicinfo.Tags;
 import roidrole.thaumicinfo.jei.AlphaDrawable;
 import thaumcraft.Thaumcraft;
@@ -22,16 +25,12 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.blocks.BlocksTC;
 import thaumcraft.api.crafting.IArcaneRecipe;
-import thaumcraft.api.crafting.ShapedArcaneRecipe;
 import thaumcraft.api.crafting.ShapelessArcaneRecipe;
 import thaumcraft.api.items.ItemsTC;
 import thaumcraft.common.items.resources.ItemCrystalEssence;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -137,9 +136,20 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
 
     @Override
     public void populateRecipes() {
+        final Map<Aspect, Int2ObjectMap<ItemStack>> canonicalisationMap = new HashMap<>();
+
+        //Populate the canonicalisationMap with the crystals we know we need
+        recipeAspects.keySet().forEach(aspect -> canonicalisationMap.compute(aspect, (key, value) -> {
+            ItemStack crystal = new ItemStack(ItemsTC.crystalEssence);
+            ((ItemCrystalEssence) ItemsTC.crystalEssence).setAspects(crystal, new AspectList().add(key, 1));
+            Int2ObjectMap<ItemStack> output = new Int2ObjectOpenHashMap<>();
+            output.put(1, crystal);
+            return output;
+        }));
+
         this.recipes = StreamSupport.stream(CraftingManager.REGISTRY.spliterator(), false)
             .filter(iRecipe -> iRecipe instanceof IArcaneRecipe)
-            .map(iRecipe -> new ArcaneWorkbenchCategory.ArcaneWorkbenchWrapper((IArcaneRecipe) iRecipe))
+            .map(iRecipe -> new ArcaneWorkbenchCategory.ArcaneWorkbenchWrapper((IArcaneRecipe) iRecipe, canonicalisationMap))
             .collect(Collectors.toList())
         ;
     }
@@ -147,55 +157,66 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
     public static class ArcaneWorkbenchWrapper extends AbstractResearchWrapper {
 
         private final IArcaneRecipe recipe;
+        private final List<ItemStack> crystals;
 
-        public ArcaneWorkbenchWrapper(IArcaneRecipe recipe) {
+        public ArcaneWorkbenchWrapper(IArcaneRecipe recipe, Map<Aspect, Int2ObjectMap<ItemStack>> canonicalisationMap) {
             this.recipe = recipe;
+
+            //Compute crystals
+            AspectList aspectList = recipe.getCrystals();
+            if(aspectList == null || aspectList.aspects.isEmpty()){
+                this.crystals = Collections.emptyList();
+            } else {
+                List<ItemStack> crystals = Arrays.asList(new ItemStack[recipeAspects.size()]);
+                aspectList.aspects.forEach((aspect, count) -> {
+                    Int2ObjectMap<ItemStack> aspectMap = canonicalisationMap.get(aspect);
+                    ItemStack crystal = aspectMap.computeIfAbsent(count, countIn -> {
+                        ItemStack crystal2 = new ItemStack(ItemsTC.crystalEssence, countIn);
+                        //Because crystals have their aspect in pure NBT, we can share the tag compound.
+                        crystal2.setTagCompound(aspectMap.get(1).getTagCompound());
+                        return crystal2;
+                    });
+                    crystals.set(recipeAspects.getInt(aspect), crystal);
+                });
+                this.crystals = crystals;
+            }
         }
 
         @Override
         public void getIngredients(@Nonnull IIngredients ingredients) {
-            List<List<ItemStack>> inputLists = new ArrayList<>();
-
-            //Crystals
-            AspectList aspectList = recipe.getCrystals();
-            if(aspectList != null) {
-                List<ItemStack> crystals = Arrays.asList(new ItemStack[recipeAspects.size()]);
-                aspectList.aspects.forEach((aspect, count) -> {
-                    ItemStack crystal = new ItemStack(ItemsTC.crystalEssence, count);
-                    ((ItemCrystalEssence) ItemsTC.crystalEssence).setAspects(crystal, new AspectList().add(aspect, 1));
-                    crystals.set(recipeAspects.getInt(aspect), crystal);
-                });
-                inputLists.add(crystals);
-            } else {
-                inputLists.add(Collections.emptyList());
-            }
-
             List<Ingredient> input;
-            ItemStack output;
-            if (recipe instanceof ShapelessArcaneRecipe) {
-                input = recipe.getIngredients();
-                output = recipe.getRecipeOutput();
-            } else if (recipe instanceof ShapedArcaneRecipe){
-                input = new ArrayList<>();
-                ShapedArcaneRecipe shapedArcaneRecipe = (ShapedArcaneRecipe) recipe;
-                int sizeX = shapedArcaneRecipe.getRecipeWidth();
-                int sizeY = shapedArcaneRecipe.getRecipeHeight();
+            ItemStack output = recipe.getRecipeOutput();
+
+            //For a 2x2 recipes to still be a square, we pad with Ingredient.EMPTY
+            if (recipe instanceof IShapedRecipe){
+                input = new ArrayList<>(9);
+                IShapedRecipe shapedRecipe = (IShapedRecipe) recipe;
+                int sizeX = shapedRecipe.getRecipeWidth();
+                int sizeY = shapedRecipe.getRecipeHeight();
                 int slot = 0;
-                for (int y = 0; y < 3; ++y) {
-                    for (int x = 0; x < 3; ++x) {
-                        if (y < sizeY && x < sizeX){
-                            input.add(recipe.getIngredients().get(slot));
-                            ++slot;
-                        } else {
-                            input.add(Ingredient.EMPTY);
-                        }
+                int y = 0;
+                for (; y < sizeY; ++y) {
+                    int x = 0;
+                    for (; x < sizeX; ++x) {
+						input.add(recipe.getIngredients().get(slot));
+						++slot;
+					}
+                    for (; x < 3; x++) {
+                        input.add(Ingredient.EMPTY);
                     }
                 }
-                output = recipe.getRecipeOutput();
+                for (; y < 3; y++) {
+                    //If it is out of bounds of y, it is out of bounds
+                    for (int x = 0; x < 3; x++) {
+                        input.add(Ingredient.EMPTY);
+                    }
+                }
             } else {
-                input = Collections.emptyList();
-                output = ItemStack.EMPTY;
+                input = recipe.getIngredients();
             }
+
+            List<List<ItemStack>> inputLists = new ArrayList<>(input.size() + 1);
+            inputLists.add(this.crystals);
             for (Ingredient ingredient : input) {
                 inputLists.add(Arrays.asList(ingredient.getMatchingStacks()));
             }

@@ -89,7 +89,7 @@ public class HEIPlugin implements IModPlugin {
 			registry.addRecipeCatalyst(new ItemStack(BlocksTC.infusionMatrix), InfusionCategory.UUID);
 		}
 		if(ThaumicInformationConfig.jeiConfig.categoryToggle.salisMundus){
-			registry.addRecipeCatalyst(SalisMundusCategory.salisMundus.get(0), SalisMundusCategory.UUID);
+			registry.addRecipeCatalyst(new ItemStack(ItemsTC.salisMundus), SalisMundusCategory.UUID);
 		}
 
 		if(ThaumicInformationConfig.jeiConfig.categoryToggle.aspectFromItemStack){

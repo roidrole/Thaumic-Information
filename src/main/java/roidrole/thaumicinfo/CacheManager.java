@@ -5,8 +5,6 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.ingredients.IIngredientBlacklist;
 import mezz.jei.api.ingredients.VanillaTypes;
@@ -222,32 +220,34 @@ public class CacheManager {
 			reader.setLenient(true);
 
 			do {
-				//Read
-				Aspect aspect = Aspect.getAspect(reader.nextName());
-				List<ItemStack> list = new ArrayList<>();
-				IntList purityList = new IntArrayList();
+				int index = 0;
+				byte[] purities = new byte[36];
+				ItemStack[] stacks = new ItemStack[36];
+				AspectList aspectList = new AspectList();
+				aspectList.add(Aspect.getAspect(reader.nextName()), 0);
 				reader.beginArray();
 				while(reader.peek() != JsonToken.END_ARRAY){
 					reader.beginArray();
-					purityList.add(reader.nextInt());
-					list.add(readItemStack(reader));
+					purities[index] = (byte)reader.nextInt();
+					stacks[index] = readItemStack(reader);
 					reader.endArray();
+					index++;
+					if(index == 36){
+						wrappers.add(new AspectFromItemStackCategory.AspectFromItemStackWrapper(aspectList, stacks, purities));
+						purities = new byte[36];
+						stacks = new ItemStack[36];
+						index = 0;
+					}
+				}
+				if(index != 0){
+					wrappers.add(new AspectFromItemStackCategory.AspectFromItemStackWrapper(aspectList, stacks, purities));
+					byte[] puritiesNew = new byte[index];
+					System.arraycopy(purities, 0, puritiesNew, 0, index);
+					ItemStack[] stacksNew = new ItemStack[index];
+					System.arraycopy(stacks, 0, stacksNew, 0, index);
+					wrappers.add(new AspectFromItemStackCategory.AspectFromItemStackWrapper(aspectList, stacksNew, puritiesNew));
 				}
 				reader.endArray();
-
-				//Interpret
-				AspectList aspectList = new AspectList();
-				aspectList.add(aspect, 0);
-				int start = 0;
-				while (start < list.size() - 36) {
-					List<ItemStack> subList = list.subList(start, start + 36);
-					IntList subPurityList = purityList.subList(start, start + 36);
-					wrappers.add(new AspectFromItemStackCategory.AspectFromItemStackWrapper(aspectList, subList, subPurityList));
-					start += 36;
-				}
-				List<ItemStack> subList = list.subList(start, list.size());
-				IntList subPurityList = purityList.subList(start, purityList.size());
-				wrappers.add(new AspectFromItemStackCategory.AspectFromItemStackWrapper(aspectList, subList, subPurityList));
 
 			} while (reader.peek() != JsonToken.END_OBJECT);
 

@@ -157,6 +157,7 @@ public class InfernalFurnaceCategory implements IRecipeCategory<InfernalFurnaceC
 			} else {
 				inRaw = OreDictionary.getOres((String)bonus.in);
 			}
+			//Keep only the non-empty inputs for which there is a valid output
 			this.output = new ArrayList<>(inRaw.size());
 			this.input = new ArrayList<>(inRaw.size());
 			for(ItemStack input : inRaw){
@@ -170,6 +171,9 @@ public class InfernalFurnaceCategory implements IRecipeCategory<InfernalFurnaceC
 				this.input.add(input);
 				this.output.add(output);
 			}
+			//Because there are many empty itemstacks
+			((ArrayList<ItemStack>)this.output).trimToSize();
+			((ArrayList<ItemStack>)this.input).trimToSize();
 			this.bonus = Collections.singletonList(bonus.out);
 			this.chance = (int) (bonus.chance * 100);
 		}

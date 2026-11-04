@@ -1,6 +1,5 @@
 package roidrole.thaumicinfo.jei.categories;
 
-import it.unimi.dsi.fastutil.ints.IntList;
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
@@ -20,6 +19,7 @@ import roidrole.thaumicinfo.jei.AlphaDrawable;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.aspects.AspectList;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class AspectFromItemStackCategory implements IRecipeCategory<AspectFromItemStackCategory.AspectFromItemStackWrapper> {
@@ -81,11 +81,11 @@ public class AspectFromItemStackCategory implements IRecipeCategory<AspectFromIt
 
         private final AspectList aspect;
         private final List<ItemStack> stacks;
-        private final IntList purity;
+        private final byte[] purity;
 
-        public AspectFromItemStackWrapper(AspectList aspect, List<ItemStack> stacks, IntList purity) {
+        public AspectFromItemStackWrapper(AspectList aspect, ItemStack[] stacks, byte[] purity) {
             this.aspect = aspect;
-            this.stacks = stacks;
+            this.stacks = Arrays.asList(stacks);
             this.purity = purity;
         }
 
@@ -103,8 +103,8 @@ public class AspectFromItemStackCategory implements IRecipeCategory<AspectFromIt
             }
             int row = 9;
             int size = 18;
-            for (int i = 0; i < this.stacks.size(); i++) {
-                int purity = this.purity.getInt(i);
+            for (int i = 0; i < this.purity.length; i++) {
+                int purity = this.purity[i] & 0xFF;
                 purity = 32 + ((255 - 64) * purity)/255;
 
                 int x = (i % row) * 18 - 18 * 3 - 21 + 82;

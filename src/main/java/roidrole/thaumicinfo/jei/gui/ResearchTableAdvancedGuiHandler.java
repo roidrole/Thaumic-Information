@@ -18,7 +18,7 @@ public class ResearchTableAdvancedGuiHandler implements IAdvancedGuiHandler<GuiR
     @Nullable
     @Override
     public List<Rectangle> getGuiExtraAreas(GuiResearchTable guiContainer) {
-        List<Rectangle> rectangles = new ArrayList<>();
+        List<Rectangle> rectangles = new ArrayList<>(2);
         if (!guiContainer.tempCatTotals.isEmpty())
             rectangles.add(new Rectangle(guiContainer.getXSize() + guiContainer.getGuiLeft(), guiContainer.getGuiTop(), 16 * 4, 30 + 16 * guiContainer.tempCatTotals.size()));
         if (guiContainer.cardChoices.size() == 3)

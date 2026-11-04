@@ -7,7 +7,6 @@ import thaumcraft.api.aspects.Aspect;
 
 public class AspectRenderer {
 	public static void drawAspect(Aspect aspect, int x, int y) {
-		GlStateManager.pushMatrix();
 		Minecraft.getMinecraft().getTextureManager().bindTexture(aspect.getImage());
 		GlStateManager.enableBlend();
 
@@ -17,6 +16,7 @@ public class AspectRenderer {
 			(float) ((aspect.getColor()) & 0xFF) / 255.0F
 		);
 		Gui.drawModalRectWithCustomSizedTexture(x, y, 0, 0, 8, 8, 8, 8);
-		GlStateManager.popMatrix();
+		GlStateManager.resetColor();
+		GlStateManager.disableBlend();
 	}
 }

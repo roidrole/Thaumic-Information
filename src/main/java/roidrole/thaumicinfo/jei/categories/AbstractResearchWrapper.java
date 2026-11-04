@@ -40,7 +40,7 @@ public abstract class AbstractResearchWrapper implements IRecipeWrapper {
     static GuiScreen oldGui = null;
     @Override
     public List<String> getTooltipStrings(int mouseX, int mouseY) {
-        if(mouseX < getBarrierX() || mouseX > getBarrierX() + 16 || mouseY < getBarrierY() || mouseY > getBarrierY() + 16){
+        if(!isMouseOnBarrier(mouseX, mouseY)){
             return Collections.emptyList();
         }
         if (this.getResearchEntry() == null){
@@ -56,9 +56,10 @@ public abstract class AbstractResearchWrapper implements IRecipeWrapper {
                 TextFormatting.YELLOW + "View in thaumonomicon"
             );
         }
-        List<String> list = new ArrayList<>();
+        String[] researchSplit = getResearch().split("&&");
+        List<String> list = new ArrayList<>(researchSplit.length + 1);
         list.add(TextFormatting.GOLD + "Missing research:");
-        for (String s : getResearch().split("&&")) {
+        for (String s : researchSplit) {
             if (!ThaumcraftCapabilities.knowsResearch(Minecraft.getMinecraft().player, s)) {
                 ResearchEntry entry = ResearchCategories.getResearch(s.contains("@") ? s.split("@")[0] : s);
                 if (entry != null) {
@@ -94,7 +95,6 @@ public abstract class AbstractResearchWrapper implements IRecipeWrapper {
         GlStateManager.enableBlend();
         Gui.drawScaledCustomSizeModalRect(getBarrierX(), getBarrierY(), 0f, 0f, 16, 16, 16, 16, 16, 16);
         GlStateManager.disableBlend();
-
     }
 
     @Override
@@ -132,6 +132,12 @@ public abstract class AbstractResearchWrapper implements IRecipeWrapper {
         }
         return ThaumcraftCapabilities.knowsResearch(Minecraft.getMinecraft().player, research.getParents());
     }
+
+    private boolean isMouseOnBarrier(int mouseX, int mouseY){
+		return
+            mouseX >= getBarrierX() && mouseX <= getBarrierX() + 16 &&
+            mouseY >= getBarrierY() && mouseY <= getBarrierY() + 16;
+	}
 
     public static class GuiResearchPageJEI extends GuiResearchPage {
 

@@ -129,7 +129,7 @@ public class InfusionCategory extends AbstractResearchCategory<InfusionCategory.
 
         @Override
         public void getIngredients(IIngredients ingredients) {
-            List<List<ItemStack>> inputs = new ArrayList<>();
+            List<List<ItemStack>> inputs = new ArrayList<>(recipe.getComponents().size() + 1);
             inputs.add(Arrays.asList(recipe.getRecipeInput().getMatchingStacks()));
             if (recipe.recipeOutput instanceof ItemStack) {
                 ingredients.setOutput(VanillaTypes.ITEM, ((ItemStack) recipe.recipeOutput).copy());

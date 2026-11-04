@@ -33,9 +33,6 @@ public class SalisMundusCategory extends AbstractResearchCategory<SalisMundusCat
 	public static final String title = new ItemStack(ItemsTC.salisMundus).getDisplayName();
 	public final IDrawable background;
 
-	//Shared ItemStack for all wrappers
-	public static final List<ItemStack> salisMundus = Collections.singletonList(new ItemStack(ItemsTC.salisMundus));
-
 	public SalisMundusCategory(IJeiHelpers helper){
 		super();
 		this.background = helper.getGuiHelper()
@@ -56,14 +53,15 @@ public class SalisMundusCategory extends AbstractResearchCategory<SalisMundusCat
 
 	@Override
 	public void populateRecipes() {
-		this.recipes = new ArrayList<>();
+		//Shared ItemStack for all wrappers
+		final List<ItemStack> salisMundus = Collections.singletonList(new ItemStack(ItemsTC.salisMundus));
+		this.recipes = new ArrayList<>(IDustTrigger.triggers.size());
 		for (IDustTrigger trigger : IDustTrigger.triggers) {
 			SalisMundusRecipeWrapper wrapper;
 			if(trigger instanceof DustTriggerSimple){
-				wrapper = new SalisMundusSimpleWrapper((DustTriggerSimple)trigger);
-			}
-			else if(trigger instanceof DustTriggerOre){
-				wrapper = new SalisMundusOreWrapper((DustTriggerOre)trigger);
+				wrapper = new SalisMundusSimpleWrapper((DustTriggerSimple)trigger, salisMundus);
+			} else if(trigger instanceof DustTriggerOre){
+				wrapper = new SalisMundusOreWrapper((DustTriggerOre)trigger, salisMundus);
 			} else {
 				continue;
 			}
@@ -71,6 +69,7 @@ public class SalisMundusCategory extends AbstractResearchCategory<SalisMundusCat
 				this.recipes.add(wrapper);
 			}
 		}
+		((ArrayList<?>)this.recipes).trimToSize();
 	}
 
 	@Override
@@ -130,7 +129,7 @@ public class SalisMundusCategory extends AbstractResearchCategory<SalisMundusCat
 	}
 
 	public static class SalisMundusSimpleWrapper extends SalisMundusRecipeWrapper {
-		public SalisMundusSimpleWrapper(DustTriggerSimple trigger) {
+		public SalisMundusSimpleWrapper(DustTriggerSimple trigger, List<ItemStack> salisMundus) {
 			AccessorDustTriggerSimple simpleTrigger = (AccessorDustTriggerSimple) trigger;
 			Block target = simpleTrigger.getTarget();
 			List<ItemStack> inputs;
@@ -146,7 +145,7 @@ public class SalisMundusCategory extends AbstractResearchCategory<SalisMundusCat
 		}
 	}
 	public static class SalisMundusOreWrapper extends SalisMundusRecipeWrapper {
-		public SalisMundusOreWrapper(DustTriggerOre trigger) {
+		public SalisMundusOreWrapper(DustTriggerOre trigger, List<ItemStack> salisMundus) {
 			AccessorDustTriggerOre oreTrigger = (AccessorDustTriggerOre) trigger;
 			this.input = Arrays.asList(salisMundus, OreDictionary.getOres(oreTrigger.getTarget()));
 			this.output = ThaumicInfoUtils.nestedSingletonList(oreTrigger.getResult());

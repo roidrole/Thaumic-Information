@@ -2,6 +2,7 @@ package roidrole.thaumicinfo.jei.categories;
 
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
+import mezz.jei.api.gui.IGuiIngredientGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.recipe.IRecipeCategory;
@@ -16,7 +17,7 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.List;
 
 public class AspectCompoundCategory implements IRecipeCategory<AspectCompoundCategory.AspectCompoundWrapper> {
 
@@ -56,12 +57,13 @@ public class AspectCompoundCategory implements IRecipeCategory<AspectCompoundCat
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, AspectCompoundCategory.AspectCompoundWrapper recipeWrapper, IIngredients ingredients) {
-        recipeLayout.getIngredientsGroup(HEIPlugin.ASPECT_LIST).init(0, true, 8, 2);
-        recipeLayout.getIngredientsGroup(HEIPlugin.ASPECT_LIST).init(1, false, 46, 2);
-        recipeLayout.getIngredientsGroup(HEIPlugin.ASPECT_LIST).init(2, false, 82, 2);
-        recipeLayout.getIngredientsGroup(HEIPlugin.ASPECT_LIST).set(0, ingredients.getInputs(HEIPlugin.ASPECT_LIST).get(0));
-        recipeLayout.getIngredientsGroup(HEIPlugin.ASPECT_LIST).set(1, ingredients.getOutputs(HEIPlugin.ASPECT_LIST).get(0));
-        recipeLayout.getIngredientsGroup(HEIPlugin.ASPECT_LIST).set(2, ingredients.getOutputs(HEIPlugin.ASPECT_LIST).get(1));
+        IGuiIngredientGroup<AspectList> group = recipeLayout.getIngredientsGroup(HEIPlugin.ASPECT_LIST);
+        group.init(0, true, 8, 2);
+        group.init(1, false, 46, 2);
+        group.init(2, false, 82, 2);
+        group.set(0, ingredients.getInputs(HEIPlugin.ASPECT_LIST).get(0));
+        group.set(1, ingredients.getOutputs(HEIPlugin.ASPECT_LIST).get(0));
+        group.set(2, ingredients.getOutputs(HEIPlugin.ASPECT_LIST).get(1));
     }
 
 
@@ -76,12 +78,12 @@ public class AspectCompoundCategory implements IRecipeCategory<AspectCompoundCat
         @Override
         public void getIngredients(IIngredients ingredients) {
             ingredients.setInput(HEIPlugin.ASPECT_LIST, new AspectList().add(this.aspect, 1));
-            ingredients.setOutputs(
-                HEIPlugin.ASPECT_LIST,
-                Arrays.stream(this.aspect.getComponents())
-                    .map(aspect -> new AspectList().add(aspect, 1))
-                    .collect(Collectors.toList())
-            );
+            Aspect[] components = this.aspect.getComponents();
+			List<AspectList> outputs = Arrays.asList(new AspectList[components.length]);
+            for (int i = 0; i < components.length; i++) {
+                outputs.set(i, new AspectList().add(components[i], 1));
+            }
+            ingredients.setOutputs(HEIPlugin.ASPECT_LIST, outputs);
         }
 
         @Override

@@ -2,6 +2,7 @@ package roidrole.thaumicinfo.jei.categories;
 
 import mezz.jei.api.gui.IDrawable;
 import mezz.jei.api.gui.IGuiIngredientGroup;
+import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
@@ -22,7 +23,10 @@ import thaumcraft.api.blocks.BlocksTC;
 import thaumcraft.api.crafting.CrucibleRecipe;
 import thaumcraft.api.crafting.IThaumcraftRecipe;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class CrucibleCategory extends AbstractResearchCategory<CrucibleCategory.CrucibleWrapper> {
 
@@ -48,13 +52,14 @@ public class CrucibleCategory extends AbstractResearchCategory<CrucibleCategory.
 
     @Override
     public void setRecipe(IRecipeLayout recipeLayout, CrucibleWrapper recipeWrapper, IIngredients ingredients) {
-        recipeLayout.getItemStacks().init(0, false, 61 - 6, 8);
-        recipeLayout.getItemStacks().set(0, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
+        IGuiItemStackGroup stackGroup = recipeLayout.getItemStacks();
+        stackGroup.init(0, false, 61 - 6, 8);
+        stackGroup.set(0, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
 
-        recipeLayout.getItemStacks().init(1, true, 2, 2);
-        recipeLayout.getItemStacks().set(1, ingredients.getInputs(VanillaTypes.ITEM).get(0));
+        stackGroup.init(1, true, 2, 2);
+        stackGroup.set(1, ingredients.getInputs(VanillaTypes.ITEM).get(0));
 
-        IGuiIngredientGroup<AspectList> ingredientGroup = recipeLayout.getIngredientsGroup(HEIPlugin.ASPECT_LIST);
+        IGuiIngredientGroup<AspectList> aspectGroup = recipeLayout.getIngredientsGroup(HEIPlugin.ASPECT_LIST);
         List<List<AspectList>> inputs = ingredients.getInputs(HEIPlugin.ASPECT_LIST);
         int maxY = MathUtil.divideCeil(inputs.size(), 4);
         int startY = ASPECT_Y - (int)((float)maxY/2 * SPACE);
@@ -65,8 +70,8 @@ public class CrucibleCategory extends AbstractResearchCategory<CrucibleCategory.
             for (int x = 0; x < maxX; x++) {
                 int slot = y * 4 + x;
                 List<AspectList> ingredient = inputs.get(slot);
-                ingredientGroup.init(slot, true, startX + x * SPACE, yCoord);
-                ingredientGroup.set(slot, ingredient);
+                aspectGroup.init(slot, true, startX + x * SPACE, yCoord);
+                aspectGroup.set(slot, ingredient);
             }
         }
     }
