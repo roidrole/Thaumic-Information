@@ -85,7 +85,7 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
             GlStateManager.color(red, green, blue);
             Gui.drawModalRectWithCustomSizedTexture(141, getCrystalYPos(entry.getIntValue()), 16, 16, 16, 16, 16, 16);
         });
-        GlStateManager.resetColor();
+        GlStateManager.color(1, 1, 1, 1);
         GlStateManager.disableBlend();
     }
 

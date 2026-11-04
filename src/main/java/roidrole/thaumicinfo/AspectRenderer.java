@@ -16,7 +16,7 @@ public class AspectRenderer {
 			(float) ((aspect.getColor()) & 0xFF) / 255.0F
 		);
 		Gui.drawModalRectWithCustomSizedTexture(x, y, 0, 0, 8, 8, 8, 8);
-		GlStateManager.resetColor();
+		GlStateManager.color(1, 1, 1, 1);
 		GlStateManager.disableBlend();
 	}
 }
