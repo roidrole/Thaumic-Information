@@ -10,6 +10,8 @@ import java.io.ObjectOutput;
 
 //The ObjectInputStream needs a no-arg constructor, and mixins cannot add this constructor, so I need an extending class.
 public class SerializableEntityTags extends ThaumcraftApi.EntityTags implements Externalizable {
+	private static final long serialVersionUID = 1750752739001431668L;
+
 	//Shared empty array as empty array is guaranteed to be immutable
 	private static final ThaumcraftApi.EntityTagsNBT[] EMPTY_NBT = new ThaumcraftApi.EntityTagsNBT[0];
 	public SerializableEntityTags() {
