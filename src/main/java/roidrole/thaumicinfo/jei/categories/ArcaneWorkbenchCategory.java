@@ -25,7 +25,6 @@ import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.blocks.BlocksTC;
 import thaumcraft.api.crafting.IArcaneRecipe;
-import thaumcraft.api.crafting.ShapelessArcaneRecipe;
 import thaumcraft.api.items.ItemsTC;
 import thaumcraft.common.items.resources.ItemCrystalEssence;
 
@@ -41,10 +40,11 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
 
     //Map<Aspect, index>
     private static final Object2IntMap<Aspect> recipeAspects = new Object2IntOpenHashMap<Aspect>(){{
+        //Making sure this follows the order in ShardType in order for the slots in JEI and in the container to align.
         put(Aspect.AIR, 0);
-        put(Aspect.EARTH, 1);
+        put(Aspect.FIRE, 1);
         put(Aspect.WATER, 2);
-        put(Aspect.FIRE, 3);
+        put(Aspect.EARTH, 3);
         put(Aspect.ORDER, 4);
         put(Aspect.ENTROPY, 5);
     }};
@@ -91,32 +91,24 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
 
     @Override
     public void setRecipe(@Nonnull IRecipeLayout recipeLayout, ArcaneWorkbenchWrapper recipeWrapper, @Nonnull IIngredients ingredients) {
-        if (recipeWrapper.getRecipe() instanceof ShapelessArcaneRecipe) {
-            recipeLayout.setShapeless();
-        }
         IGuiItemStackGroup stackGroup = recipeLayout.getItemStacks();
-        int slot = 0;
 
         //Note that index 0 is the list of crystals, slightly breaking convention
         List<List<ItemStack>> inputs = ingredients.getInputs(VanillaTypes.ITEM);
 
         //Output
-        stackGroup.init(slot, false, 51 - 9 + 30, 7);
-        stackGroup.set(slot, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
-        slot++;
+        stackGroup.init(0, false, 51 - 9 + 30, 7);
+        stackGroup.set(0, ingredients.getOutputs(VanillaTypes.ITEM).get(0));
 
         //Input
         for (int y = 0; y < 3; ++y) {
             for (int x = 0; x < 3; ++x) {
-                if(slot >= inputs.size()){
-                    break;
-                }
+                int slot = y * 3 + x + 1;
                 stackGroup.init(slot, true, 11 + (x * 32) + 30, 11 + (y * 31) + 36);
                 List<ItemStack> items = inputs.get(slot);
                 if (items != null) {
                     stackGroup.set(slot, items);
                 }
-                slot++;
             }
         }
 
@@ -124,13 +116,12 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
         List<ItemStack> crystals = inputs.get(0);
         for (int i = 0; i < crystals.size(); i++) {
             ItemStack crystal = crystals.get(i);
+            int yPos = getCrystalYPos(i);
+            stackGroup.init(10 + i, true, 118 + 23, yPos);
             if(crystal == null){
                 continue;
             }
-            int yPos = getCrystalYPos(i);
-            stackGroup.init(slot, false, 118 + 23, yPos);
-            stackGroup.set(slot, crystal);
-            slot++;
+            stackGroup.set(10 + i, crystal);
         }
     }
 
@@ -212,7 +203,12 @@ public class ArcaneWorkbenchCategory extends AbstractResearchCategory<ArcaneWork
                     }
                 }
             } else {
-                input = recipe.getIngredients();
+                //Recipe transfers for crystals expects a length of 9
+                input = new ArrayList<>(9);
+                input.addAll(recipe.getIngredients());
+                while(input.size() < 9){
+                    input.add(Ingredient.EMPTY);
+                }
             }
 
             List<List<ItemStack>> inputLists = new ArrayList<>(input.size() + 1);
