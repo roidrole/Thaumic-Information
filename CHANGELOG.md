@@ -5,6 +5,8 @@
 **Changed**:
 - Moved rendering stuff to GlStateManager. Should help with transparency issues
 - Optimized RAM usage in miscellaneous places. You shouldn't feel much, this is kilobytes less
+- When missing a lot of researches, show all of them (walk the dependency tree)
+- Show the category of researches in research categories
 
 **Fixed**: 
 - Compatibility with JEI versions 4.15 to 4.25

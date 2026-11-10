@@ -9,19 +9,16 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import roidrole.thaumicinfo.Tags;
 import roidrole.thaumicinfo.mixins.accessors.AccessorGuiResearchPage;
+import roidrole.thaumicinfo.utils.ThaumicInfoUtils;
 import thaumcraft.Thaumcraft;
 import thaumcraft.api.capabilities.ThaumcraftCapabilities;
 import thaumcraft.api.research.ResearchCategories;
-import thaumcraft.api.research.ResearchCategory;
 import thaumcraft.api.research.ResearchEntry;
 import thaumcraft.client.gui.GuiResearchPage;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /*
  * TODO: turn this class into an IIngredientType (ResearchEntry) instead
@@ -43,7 +40,8 @@ public abstract class AbstractResearchWrapper implements IRecipeWrapper {
         if(!isMouseOnBarrier(mouseX, mouseY)){
             return Collections.emptyList();
         }
-        if (this.getResearchEntry() == null){
+        ResearchEntry firstResearch = ThaumicInfoUtils.getEntry(this.getResearch());
+        if (firstResearch == null){
             return Collections.emptyList();
         }
         if (ThaumcraftCapabilities.knowsResearch(Minecraft.getMinecraft().player, getResearch())){
@@ -52,26 +50,51 @@ public abstract class AbstractResearchWrapper implements IRecipeWrapper {
         if (knowsParents()){
             return Arrays.asList(
                 TextFormatting.GOLD + "Missing research: ",
-                "- " + TextFormatting.YELLOW + this.getResearchEntry().getLocalizedName(),
+                prepareResearch(firstResearch, TextFormatting.YELLOW),
                 TextFormatting.YELLOW + "View in thaumonomicon"
             );
         }
         String[] researchSplit = getResearch().split("&&");
-        List<String> list = new ArrayList<>(researchSplit.length + 1);
-        list.add(TextFormatting.GOLD + "Missing research:");
-        for (String s : researchSplit) {
-            if (!ThaumcraftCapabilities.knowsResearch(Minecraft.getMinecraft().player, s)) {
-                ResearchEntry entry = ResearchCategories.getResearch(s.contains("@") ? s.split("@")[0] : s);
-                if (entry != null) {
-                    list.add("- " + TextFormatting.RED + entry.getLocalizedName());
-                }
-                else {
-                    list.add("- " + TextFormatting.RED + s);
-                }
+
+        Set<ResearchEntry> searchesEntries = new HashSet<>();
+        Queue<ResearchEntry> BFSQueue = new LinkedList<>();
+        for(String research: researchSplit){
+            ResearchEntry entry = ThaumicInfoUtils.getEntry(research);
+            if(searchesEntries.add(entry)) {
+                BFSQueue.offer(entry);
             }
         }
+        LinkedHashSet<String> tooltip = new LinkedHashSet<>(researchSplit.length + 1);
+        while(!BFSQueue.isEmpty()){
+            ResearchEntry research = BFSQueue.poll();
+            if(research == null){
+                continue;
+            }
+            if (!ThaumcraftCapabilities.knowsResearch(Minecraft.getMinecraft().player, research.getKey())) {
+				tooltip.add(prepareResearch(research, TextFormatting.RED));
+                String[] parents = research.getParentsStripped();
+                if(parents == null){
+                    continue;
+                }
+                for(String parent : parents){
+                    ResearchEntry entry = ThaumicInfoUtils.getEntry(parent);
+                    if(searchesEntries.add(entry)) {
+                        BFSQueue.offer(entry);
+                    }
+                }
+			}
+        }
 
-        return list;
+        List<String> out = Arrays.asList(new String[tooltip.size() + 1]);
+        int index = tooltip.size();
+        for(String line : tooltip){
+            out.set(index, line);
+            index--;
+        }
+        out.set(0, TextFormatting.GOLD + "Missing research:");
+
+
+        return out;
     }
 
     @Override
@@ -81,7 +104,7 @@ public abstract class AbstractResearchWrapper implements IRecipeWrapper {
         }
         ResourceLocation book;
         if (ThaumcraftCapabilities.knowsResearch(minecraft.player, this.getResearch())) {
-            if(this.getResearchEntry() == null){
+            if(ThaumicInfoUtils.getEntry(this.getResearch()) == null){
                 return;
             }
             book = new ResourceLocation(Tags.MOD_ID, "textures/gui/thaumonomicon_green.png");
@@ -99,31 +122,22 @@ public abstract class AbstractResearchWrapper implements IRecipeWrapper {
 
     @Override
     public boolean handleClick(Minecraft minecraft, int mouseX, int mouseY, int mouseButton) {
-        if(mouseX > getBarrierX() && mouseX < getBarrierX() + 16 && mouseY > getBarrierY() && mouseY < getBarrierY() + 16){
+        if(isMouseOnBarrier(mouseX, mouseY)){
             if(this.knowsParents()){
                 oldGui = minecraft.currentScreen;
-                minecraft.displayGuiScreen(new GuiResearchPageJEI(this.getResearchEntry(), null, 0, 0));
+                minecraft.displayGuiScreen(new GuiResearchPageJEI(ThaumicInfoUtils.getEntry(this.getResearch()), null, 0, 0));
             }
         }
         return IRecipeWrapper.super.handleClick(minecraft, mouseX, mouseY, mouseButton);
     }
 
-    private ResearchEntry getResearchEntry(){
-        if(this.getResearch() == null){
-            return null;
-        }
-        ResearchEntry research;
-        for(ResearchCategory category : ResearchCategories.researchCategories.values()){
-            research = category.research.get(this.getResearch().split("@")[0]);
-            if(research != null){
-                return research;
-            }
-        }
-        return null;
+    private static String prepareResearch(ResearchEntry research, TextFormatting format){
+        String categoryName = ResearchCategories.getCategoryName(research.getCategory());
+        return "- " + format + categoryName + ": " + research.getLocalizedName();
     }
 
     private boolean knowsParents(){
-        ResearchEntry research = getResearchEntry();
+        ResearchEntry research = ThaumicInfoUtils.getEntry(this.getResearch());
         if(research == null){
             return false;
         }
@@ -134,9 +148,11 @@ public abstract class AbstractResearchWrapper implements IRecipeWrapper {
     }
 
     private boolean isMouseOnBarrier(int mouseX, int mouseY){
+        int barrierX = getBarrierX();
+        int barrierY = getBarrierY();
 		return
-            mouseX >= getBarrierX() && mouseX <= getBarrierX() + 16 &&
-            mouseY >= getBarrierY() && mouseY <= getBarrierY() + 16;
+            mouseX >= barrierX && mouseX <= barrierX + 16 &&
+            mouseY >= barrierY && mouseY <= barrierY + 16;
 	}
 
     public static class GuiResearchPageJEI extends GuiResearchPage {
