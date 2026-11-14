@@ -1,11 +1,11 @@
-## Unreleased
+## 1.3.0
 **Added**:
 - Dynamic wrapping for aspects in the crucible and infusion tab
 
 **Changed**:
 - Moved rendering stuff to GlStateManager. Should help with transparency issues
 - Optimized RAM usage in miscellaneous places. You shouldn't feel much, this is kilobytes less
-- When missing a lot of researches, show all of them (walk the dependency tree)
+- When missing more than 1 research, show all of them (walk the dependency tree)
 - Show the category of researches in research categories
 
 **Fixed**: 
