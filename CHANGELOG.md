@@ -7,6 +7,7 @@
 - Optimized RAM usage in miscellaneous places. You shouldn't feel much, this is kilobytes less
 - When missing more than 1 research, show all of them (walk the dependency tree)
 - Show the category of researches in research categories
+- Arcane workbench crystals will now transfer properly
 
 **Fixed**: 
 - Compatibility with JEI versions 4.15 to 4.25
